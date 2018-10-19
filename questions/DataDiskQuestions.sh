@@ -26,7 +26,11 @@ IFS=$SAVEIFS
 
 for dev in "${DEVICES[@]}"
 do
-DEVICES_WHIPTAILTABLE+=("$dev" ""  "OFF" )
+	if [ "${DataDisk[Devices]}" = "$dev" ]
+	then
+	DEVICES_WHIPTAILTABLE+=("$dev" ""  "ON" )
+	fi
+	DEVICES_WHIPTAILTABLE+=("$dev" ""  "OFF" )
 done
 
 SELECTEDDEVICES=$(whiptail --title "Nextcloud apps" --checklist --separate-output \
