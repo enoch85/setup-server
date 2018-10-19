@@ -29,8 +29,9 @@ do
 	if [ "${DataDisk[Devices]}" = "$dev" ]
 	then
 	DEVICES_WHIPTAILTABLE+=("$dev" ""  "ON" )
-	fi
+	else
 	DEVICES_WHIPTAILTABLE+=("$dev" ""  "OFF" )
+	fi
 done
 
 SELECTEDDEVICES=$(whiptail --title "Nextcloud apps" --checklist --separate-output \
