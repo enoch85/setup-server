@@ -1,3 +1,4 @@
+#!/bin/bash
 # MAIN_SETUP needs to be set here to prevent the functions.sh import to set subshell_active=1
 MAIN_SETUP=1
 Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
@@ -44,7 +45,6 @@ workflow+=("${DIR_STATIC}/adduser.sh")
 # ...
 
 source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/SetupQuestions.sh")
-# source "${DIR_Questions}/SetupQuestions.sh"
 
 ## Edit ${CONFIG} file according to the users wishes
 
@@ -68,9 +68,8 @@ SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=1
 SetupServerMethod[AdvancedSetup]=0
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/SetupQuestions.sh")
-# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/DataDiskQuestions.sh)
-# source "${DIR_Questions}/DataDiskQuestions.sh"
+
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DataDiskQuestions.sh")
 
 fi
 
@@ -83,24 +82,14 @@ SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=1
 
 source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/TimezoneQuestions.sh")
-# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/TimezoneQuestions.sh)
-# source "${DIR_Questions}/TimezoneQuestions.sh"
 
 source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DatabaseQuestions.sh")
-# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/DatabaseQuestions.sh)
-# source "${DIR_Questions}/DatabaseQuestions.sh"
 
 source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/NextcloudAppsQuestions.sh")
-# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/NextcloudAppsQuestions.sh)
-# source "${DIR_Questions}/NextcloudAppsQuestions.sh"
 
 source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/OfficeQuestions.sh")
-# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/OfficeQuestions.sh)
-# source "${DIR_Questions}/OfficeQuestions.sh"
 
 source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/CommunicationQuestions.sh")
-# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/CommunicationQuestions.sh)
-# source "${DIR_Questions}/CommunicationQuestions.sh"
 fi
 
 ## Display Warnings and messages?
@@ -114,27 +103,7 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-# Create new temporary config file (empty it, when it already exists) for the other scripts
-> "${CONFIG_FILE_PATH}.tmp"
-
-# https://stackoverflow.com/a/35543417
-for idx in "${arrays[@]}"; do
-    declare -n temp="$idx"
-	printf "[${idx}]\n" >> "${CONFIG_FILE_PATH}.tmp"
-	for i in "${!temp[@]}"
-	do 
-		printf "${i}=${temp[$i]}\n" >> "${CONFIG_FILE_PATH}.tmp"
-	done
-	printf "\n" >> "${CONFIG_FILE_PATH}.tmp"
-done
-
-# Replace old config file by new one
-cat "${CONFIG_FILE_PATH}.tmp" > "$CONFIG_FILE_PATH"
-
-
-# Delete config.tmp
-rm "${CONFIG_FILE_PATH}.tmp"
-
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_STATIC}/UpdateConfigFile.sh")
 
 ## Execute the needed scripts in the right order.
 
@@ -143,13 +112,12 @@ echo "${workflow[@]}"
 
 any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
-# for script in "${workflow[@]}"
-# do
-
-# download_static_script adduser
-# bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
-# rm $SCRIPTS/adduser.sh
-# bash "${script}"
-# done
+for script in "${workflow[@]}"
+do
+	# download_static_script adduser
+	# bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
+	# rm $SCRIPTS/adduser.sh
+	source < (curl -sL "${Github_Repository}/${Github_Branch}/${script}")
+done
 
 

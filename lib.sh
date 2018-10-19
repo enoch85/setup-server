@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # Global parameters
+Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
+Github_Branch="master"
 source <(curl -sL "${Github_Repository}/${Github_Branch}/global-parameter.cfg")
 
 
+subshell_active=0
 # Config already available? If not, load it from Github.
 if [ ! -f "$CONFIG_FILE_PATH" ]; then
 	# It is not the main file that has been called but the subscript.
