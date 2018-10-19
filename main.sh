@@ -15,8 +15,6 @@ fi
 # Include functions (download the config file and read it to arrays)
 source <(curl -sL "${Github_Repository}/${Github_Branch}/lib.sh")
 
-echo $Setup
-exit
 # source lib.sh
 
 ###############################################################################################
