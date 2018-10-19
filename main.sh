@@ -16,8 +16,6 @@ fi
 # Include functions (download the config file and read it to arrays)
 source <(curl -sL "${Github_Repository}/${Github_Branch}/lib.sh")
 
-# source lib.sh
-
 ###############################################################################################
 ###############################################################################################
 ###############################################################################################
@@ -95,10 +93,6 @@ fi
 ## Display Warnings and messages?
 # Open Port 443 usw.
 
-
-
-
-
 ###############################################################################################
 ###############################################################################################
 ###############################################################################################
@@ -114,10 +108,7 @@ any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
 for script in "${workflow[@]}"
 do
-	# download_static_script adduser
-	# bash $SCRIPTS/adduser.sh "nextcloud_install_production.sh"
-	# rm $SCRIPTS/adduser.sh
-	source < (curl -sL "${Github_Repository}/${Github_Branch}/${script}")
+	source <(curl -sL "${Github_Repository}/${Github_Branch}/${script}")
 done
 
 

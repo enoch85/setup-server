@@ -51,5 +51,4 @@ then
 	# Execute script with the new user?
 	# sudo -u "$NEWUSER" sudo bash "$1"
 	exit
-else
 fi
