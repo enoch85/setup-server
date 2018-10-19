@@ -97,7 +97,6 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-
 source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_STATIC}/UpdateConfigFile.sh")
 
 ## Execute the needed scripts in the right order.
