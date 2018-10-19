@@ -1,8 +1,23 @@
 # MAIN_SETUP needs to be set here to prevent the functions.sh import to set subshell_active=1
 MAIN_SETUP=1
+Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
+Github_Branch="master"
+
+# Install curl if not existing
+if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
+then
+    echo "curl OK"
+else
+    apt update -q4
+    apt install curl -y
+fi
 
 # Include functions (download the config file and read it to arrays)
-source lib.sh
+source <(curl -sL "${Github_Repository}/${Github_Branch}/lib.sh")
+
+echo $Setup
+exit
+# source lib.sh
 
 ###############################################################################################
 ###############################################################################################
@@ -30,7 +45,8 @@ workflow+=("${DIR_STATIC}/adduser.sh")
 # workflow[14]="SecureSSH"
 # ...
 
-source "${DIR_Questions}/SetupQuestions.sh"
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/SetupQuestions.sh")
+# source "${DIR_Questions}/SetupQuestions.sh"
 
 ## Edit ${CONFIG} file according to the users wishes
 
@@ -54,7 +70,9 @@ SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=1
 SetupServerMethod[AdvancedSetup]=0
 
-source "${DIR_Questions}/DataDiskQuestions.sh"
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/SetupQuestions.sh")
+# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/DataDiskQuestions.sh)
+# source "${DIR_Questions}/DataDiskQuestions.sh"
 
 fi
 
@@ -66,15 +84,25 @@ SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=1
 
-source "${DIR_Questions}/TimezoneQuestions.sh"
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/TimezoneQuestions.sh")
+# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/TimezoneQuestions.sh)
+# source "${DIR_Questions}/TimezoneQuestions.sh"
 
-source "${DIR_Questions}/DatabaseQuestions.sh"
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DatabaseQuestions.sh")
+# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/DatabaseQuestions.sh)
+# source "${DIR_Questions}/DatabaseQuestions.sh"
 
-source "${DIR_Questions}/NextcloudAppsQuestions.sh"
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/NextcloudAppsQuestions.sh")
+# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/NextcloudAppsQuestions.sh)
+# source "${DIR_Questions}/NextcloudAppsQuestions.sh"
 
-source "${DIR_Questions}/OfficeQuestions.sh"
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/OfficeQuestions.sh")
+# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/OfficeQuestions.sh)
+# source "${DIR_Questions}/OfficeQuestions.sh"
 
-source "${DIR_Questions}/CommunicationQuestions.sh"
+source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/CommunicationQuestions.sh")
+# source <(curl -sL https://raw.githubusercontent.com/ggeorgg/setup-server/master/questions/CommunicationQuestions.sh)
+# source "${DIR_Questions}/CommunicationQuestions.sh"
 fi
 
 ## Display Warnings and messages?

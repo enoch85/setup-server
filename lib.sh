@@ -1,18 +1,17 @@
 #!/bin/bash
 
 # Global parameters
-source global-parameter.cfg
+source <(curl -sL "${Github_Repository}/${Github_Branch}/global-parameter.cfg")
 
 
 # Config already available? If not, load it from Github.
 if [ ! -f "$CONFIG_FILE_PATH" ]; then
 	# It is not the main file that has been called but the subscript.
     echo "Config file not found - Getting the default one from github.com!"
-	wget https://raw.githubusercontent.com/ggeorgg/vm/master/config.cfg
+	wget "${Github_Repository}/${Github_Branch}/config.cfg"
 	if [ "$MAIN_SETUP -neq 1" ]; then
 		subshell_active=1
 	fi
-	# exit
 fi
 
 # Read config file to arrays
@@ -73,4 +72,16 @@ function check_command() {
      echo "$* failed"
     exit 1
   fi
+}
+
+function spinner_loading() {
+    pid=$!
+    spin='-\|/'
+    i=0
+    while kill -0 $pid 2>/dev/null
+    do
+        i=$(( (i+1) %4 ))
+        printf "\r[${spin:$i:1}] " # Add text here, something like "Please be paitent..." maybe?
+        sleep .1
+    done
 }
