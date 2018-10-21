@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Global parameters
-source File.sh "GlobalParamter.cfg"
+source File.sh "GlobalParameter.cfg"
 
 
 subshell_active=0
