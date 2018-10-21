@@ -6,10 +6,10 @@ source "${Local_Repository}/SourceFile.sh" "GlobalParameter.cfg"
 
 subshell_active=0
 # Config already available? If not, load it from Github.
-if [ ! -f "${Local_Repository}/$CONFIG_FILE_PATH" ]; then
+if [ ! -f "${Local_Repository}/config.cfg" ]; then
 	# It is not the main file that has been called but the subscript because the config file does not exist
     echo "Config file not found - Getting the default one from github.com!"
-	wget -o "${Local_Repository}/config.cfg" "${Github_Repository}/${Github_Branch}/config.cfg"
+	wget -O "${Local_Repository}/config.cfg" "${Github_Repository}/${Github_Branch}/config.cfg"
 	if [ "$MAIN_SETUP -neq 1" ]; then
 		subshell_active=1
 	fi
@@ -25,7 +25,7 @@ while read line; do
     elif [[ $line =~ ^([_[:alpha:]][_[:alnum:]]*)"="(.*) ]]; then 
         declare ${arrname}[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
     fi
-done < "$CONFIG_FILE_PATH"
+done < "${Local_Repository}/config.cfg"
 
 
 ### Begin of functions

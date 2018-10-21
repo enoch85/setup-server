@@ -108,4 +108,4 @@ done
 # whoami
 
 ## Clear downloads
-rm "${Local_Repository}/config.cfg"
+# rm "${Local_Repository}/config.cfg"
