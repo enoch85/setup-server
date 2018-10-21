@@ -16,10 +16,10 @@ exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
 
 case "$ADDSUDOUSER" in
 	Yes)
-		Communication[Adduser]=1
+		SudoUser[Adduser]=1
 	;;		
 	No)
-		Communication[Adduser]=0
+		SudoUser[Adduser]=0
 	;;
 	*)
 		
@@ -41,5 +41,5 @@ if [ "${SudoUser[Adduser]}" -eq 1 ]; then
 	done
 	SudoUser[Username]="$NEWUSER"
 else 
-	echo "No user will be added.
+	echo "No user will be added."
 fi
