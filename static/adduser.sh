@@ -7,12 +7,12 @@ then
 	Local_Repository="/home/georg/github/ggeorgg/setup-server"
 	sudo wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
 	# Include functions (download the config file and read it to arrays)
-	. SourceFile.sh "lib.sh"
+	. "${Local_Repository}/SourceFile.sh" "lib.sh"
 
 	subshell_active=1
 		
 	## Questions
-	. SourceFile.sh "${Local_Repository}/${DIR_Questions}/AddUserQuestions.sh"
+	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
 	
 fi
 

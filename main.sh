@@ -82,7 +82,7 @@ SetupServerMethod[AdvancedSetup]=1
 
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/OfficeQuestions.sh"
 
-. "${Local_Repository}/SourceFile.sh""${DIR_Questions}/CommunicationQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/CommunicationQuestions.sh"
 fi
 
 ## Display Warnings and messages?
