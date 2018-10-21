@@ -3,6 +3,9 @@
 MAIN_SETUP=1
 Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
 Github_Branch="master"
+UseLocalFiles=1
+
+wget -O "File.sh" "${Github_Repository}/${Github_Branch}/File.sh"
 
 # Install curl if not existing
 if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
@@ -14,7 +17,8 @@ else
 fi
 
 # Include functions (download the config file and read it to arrays)
-source <(curl -sL "${Github_Repository}/${Github_Branch}/lib.sh")
+source File.sh "lib.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/lib.sh")
 
 ###############################################################################################
 ###############################################################################################
@@ -42,7 +46,8 @@ workflow+=("${DIR_STATIC}/adduser.sh")
 # workflow[14]="SecureSSH"
 # ...
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/SetupQuestions.sh")
+source File.sh "${DIR_Questions}/SetupQuestions.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/SetupQuestions.sh")
 
 ## Edit ${CONFIG} file according to the users wishes
 
@@ -67,7 +72,8 @@ SetupServerMethod[SimpleSetup]=1
 SetupServerMethod[AdvancedSetup]=0
 
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DataDiskQuestions.sh")
+source File.sh "${DIR_Questions}/DataDiskQuestions.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DataDiskQuestions.sh")
 
 fi
 
@@ -79,15 +85,20 @@ SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=1
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/TimezoneQuestions.sh")
+source File.sh "${DIR_Questions}/TimezoneQuestions.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/TimezoneQuestions.sh")
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DatabaseQuestions.sh")
+source File.sh "${DIR_Questions}/DatabaseQuestions.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DatabaseQuestions.sh")
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/NextcloudAppsQuestions.sh")
+source File.sh "${DIR_Questions}/NextcloudAppsQuestions.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/NextcloudAppsQuestions.sh")
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/OfficeQuestions.sh")
+source File.sh "${DIR_Questions}/OfficeQuestions.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/OfficeQuestions.sh")
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/CommunicationQuestions.sh")
+source File.sh "${DIR_Questions}/CommunicationQuestions.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/CommunicationQuestions.sh")
 fi
 
 ## Display Warnings and messages?
@@ -97,7 +108,8 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_STATIC}/UpdateConfigFile.sh")
+source File.sh "${DIR_STATIC}/UpdateConfigFile.sh"
+# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_STATIC}/UpdateConfigFile.sh")
 
 ## Execute the needed scripts in the right order.
 
@@ -108,7 +120,6 @@ any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
 for script in "${workflow[@]}"
 do
-	source <(curl -sL "${Github_Repository}/${Github_Branch}/${script}")
+	source File.sh "${script}"
+	# source <(curl -sL "${Github_Repository}/${Github_Branch}/${script}")
 done
-
-
