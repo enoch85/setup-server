@@ -1,4 +1,4 @@
-if [ ! -f "$1" ] || [ "${UseLocalFiles}" -eq 0 ]; then
+if [ ! -f "${Local_Repository}/$1" ] || [ "${UseLocalFiles}" -eq 0 ]; then
 	echo "We will now get the file:"
 	echo "${Github_Repository}/${Github_Branch}/$1"
 	echo "The file will be saved as:"
