@@ -8,9 +8,9 @@ Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
 Github_Branch="master"
 UseLocalFiles=1
 
-wget -O "File.sh" "${Github_Repository}/${Github_Branch}/File.sh"
+# wget -O "SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
 # Include functions (download the config file and read it to arrays)
-source File.sh "lib.sh"
+. SourceFile.sh "lib.sh"
 
 ###############################################################################################
 ###############################################################################################
@@ -38,12 +38,11 @@ workflow+=("${DIR_STATIC}/adduser.sh")
 # workflow[14]="SecureSSH"
 # ...
 
-source File.sh "${DIR_Questions}/SetupQuestions.sh"
+. SourceFile.sh "${DIR_Questions}/SetupQuestions.sh"
 
 ## Edit ${CONFIG} file according to the users wishes
 
-if [ "$SETUP" -eq "0" ]
-then
+if [ "$SETUP" -eq "0" ]; then
 SetupServerMethod[NoInteraction]=1
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=0
@@ -55,35 +54,33 @@ sudo timedatectl set-timezone "${Timezone[Continent]}/${Timezone[City]}"
 # End: Set Timezone'
 fi
 
-if [ "$SETUP" -gt "0" ]
-then
+if [ "$SETUP" -gt "0" ]; then
 # Simple Setup has been choosen. Change the most required settings.
 SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=1
 SetupServerMethod[AdvancedSetup]=0
 
 
-source File.sh "${DIR_Questions}/DataDiskQuestions.sh"
+. SourceFile.sh "${DIR_Questions}/DataDiskQuestions.sh"
 
 fi
 
 
-if [ "$SETUP" -gt "1" ]
-then
+if [ "$SETUP" -gt "1" ]; then
 # Advanced Setup has been choosen. Ask the user all available questions which have not been displayed yet.
 SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=1
 
-source File.sh "${DIR_Questions}/TimezoneQuestions.sh"
+. SourceFile.sh "${DIR_Questions}/TimezoneQuestions.sh"
 
-source File.sh "${DIR_Questions}/DatabaseQuestions.sh"
+. SourceFile.sh "${DIR_Questions}/DatabaseQuestions.sh"
 
-source File.sh "${DIR_Questions}/NextcloudAppsQuestions.sh"
+. SourceFile.sh "${DIR_Questions}/NextcloudAppsQuestions.sh"
 
-source File.sh "${DIR_Questions}/OfficeQuestions.sh"
+. SourceFile.sh "${DIR_Questions}/OfficeQuestions.sh"
 
-source File.sh "${DIR_Questions}/CommunicationQuestions.sh"
+. SourceFile.sh "${DIR_Questions}/CommunicationQuestions.sh"
 fi
 
 ## Display Warnings and messages?
@@ -93,8 +90,7 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-source File.sh "${DIR_STATIC}/UpdateConfigFile.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_STATIC}/UpdateConfigFile.sh")
+. SourceFile.sh "${DIR_STATIC}/UpdateConfigFile.sh"
 
 ## Execute the needed scripts in the right order.
 
@@ -103,7 +99,6 @@ echo "${workflow[@]}"
 
 any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
-for script in "${workflow[@]}"
-do
-	source File.sh "${script}"
+for script in "${workflow[@]}"; do
+	. SourceFile.sh "${script}"
 done
