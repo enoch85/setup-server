@@ -10,7 +10,7 @@ UseLocalFiles=0	# This variable is for developement purposes, so that we don't h
 Local_Repository="/home/georg/github/ggeorgg/setup-server"
 wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
 # Include functions (download the config file and read it to arrays)
-. SourceFile.sh "lib.sh"
+. "${Local_Repository}/SourceFile.sh" "lib.sh"
 
 ###############################################################################################
 ###############################################################################################
@@ -38,7 +38,7 @@ workflow+=("${Local_Repository}/${DIR_STATIC}/adduser.sh")
 # workflow[14]="SecureSSH"
 # ...
 
-. SourceFile.sh "${DIR_Questions}/SetupQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/SetupQuestions.sh"
 
 ## Edit ${CONFIG} file according to the users wishes
 
@@ -61,7 +61,7 @@ SetupServerMethod[SimpleSetup]=1
 SetupServerMethod[AdvancedSetup]=0
 
 
-. SourceFile.sh "${DIR_Questions}/DataDiskQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DataDiskQuestions.sh"
 
 fi
 
@@ -72,17 +72,17 @@ SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=1
 
-. SourceFile.sh "${DIR_Questions}/TimezoneQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/TimezoneQuestions.sh"
 
-. SourceFile.sh "${DIR_Questions}/AddUserQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
 
-. SourceFile.sh "${DIR_Questions}/DatabaseQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DatabaseQuestions.sh"
 
-. SourceFile.sh "${DIR_Questions}/NextcloudAppsQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/NextcloudAppsQuestions.sh"
 
-. SourceFile.sh "${DIR_Questions}/OfficeQuestions.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/OfficeQuestions.sh"
 
-. SourceFile.sh "${DIR_Questions}/CommunicationQuestions.sh"
+. "${Local_Repository}/SourceFile.sh""${DIR_Questions}/CommunicationQuestions.sh"
 fi
 
 ## Display Warnings and messages?
@@ -92,7 +92,7 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-. SourceFile.sh "${DIR_STATIC}/UpdateConfigFile.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh"
 
 ## Execute the needed scripts in the right order.
 
@@ -103,7 +103,7 @@ any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
 whoami
 for script in "${workflow[@]}"; do
-	. SourceFile.sh "${script}"
+	. "${Local_Repository}/SourceFile.sh" "${script}"
 done
 whoami
 

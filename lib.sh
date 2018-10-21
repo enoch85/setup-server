@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Global parameters
-source SourceFile.sh "GlobalParameter.cfg"
+source "${Local_Repository}/SourceFile.sh" "GlobalParameter.cfg"
 
 
 subshell_active=0
