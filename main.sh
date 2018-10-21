@@ -18,7 +18,7 @@ wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branc
 
 
 workflow=()
-workflow+=("${DIR_STATIC}/adduser.sh")
+workflow+=("${Local_Repository}/${DIR_STATIC}/adduser.sh")
 # workflow+=("${DIR_STATIC}/format-device.sh")
 # workflow+=("${DIR_STATIC}/Setup-Webserver.sh")
 # workflow[0]="SetupWebserver"
@@ -74,6 +74,8 @@ SetupServerMethod[AdvancedSetup]=1
 
 . SourceFile.sh "${DIR_Questions}/TimezoneQuestions.sh"
 
+. SourceFile.sh "${DIR_Questions}/AddUserQuestions.sh"
+
 . SourceFile.sh "${DIR_Questions}/DatabaseQuestions.sh"
 
 . SourceFile.sh "${DIR_Questions}/NextcloudAppsQuestions.sh"
@@ -99,10 +101,11 @@ echo "${workflow[@]}"
 
 any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
+whoami
 for script in "${workflow[@]}"; do
 	. SourceFile.sh "${script}"
 done
-
+whoami
 
 ## Clear downloads
-rm config.cfg
+rm "${Local_Repository}/config.cfg"

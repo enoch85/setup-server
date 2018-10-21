@@ -10,44 +10,26 @@ then
 	. SourceFile.sh "lib.sh"
 
 	subshell_active=1
-	
+		
 	## Questions
 	. SourceFile.sh "${Local_Repository}/${DIR_Questions}/AddUserQuestions.sh"
 	
 fi
 
-if [ "$SUDO_USER" = "root" ]
-then
-	# creating a new user is mandatory 
-	SudoUser[Adduser]=1
-else
-	echo "You are not the root user"
-fi
-
 if [ "${SudoUser[Adduser]}" -eq 1 ]
 then
-	while true
-		read -e -r -p "Enter name of the new user: " -i "${SudoUser[Username]}" NEWUSER
-		if [ -z "$NEWUSER" ] || [ "$NEWUSER" == "root" ]
-		then
-			echo "User must not be blank or \"root\""
-		else
-			break
-		fi
-	do
-	echo "You chose \"$NEWUSER\" as username."
-	done
-	SudoUser[Username]="$NEWUSER"
-	exit
-	
-	adduser --disabled-password --gecos "" "$NEWUSER"
-	sudo usermod -aG sudo "$NEWUSER"
-	usermod -s /bin/bash "$NEWUSER"
+msg_box "We will create the new user with sudo permissions now.\n
+You will be prompted to choose a password"
+	sudo adduser --disabled-password --gecos "" "${SudoUser[Username]}"
+	sudo usermod -aG sudo "${SudoUser[Username]}"
+	sudo usermod -s /bin/bash "${SudoUser[Username]}"
 	while true
 	do
-		sudo passwd "$NEWUSER" && break
+		sudo passwd "${SudoUser[Username]}" && break
 	done
 	# Execute script with the new user?
-	# sudo -u "$NEWUSER" sudo bash "$1"
-	exit
+	sudo su "${SudoUser[Username]}"
+	echo "user switched"
+	# sudo -u "${SudoUser[Username]}"  sudo bash "$1"
+	# exit
 fi
