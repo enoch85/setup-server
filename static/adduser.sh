@@ -4,7 +4,7 @@ then
 	Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
 	Github_Branch="master"
 	UseLocalFiles=1	# This variable is for developement purposes, so that we don't have to push changes in a file to github befor testing it.
-	Local_Repository=/home/georg/github/ggeorgg/setup-server
+	Local_Repository="/home/georg/github/ggeorgg/setup-server"
 	sudo wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
 	# Include functions (download the config file and read it to arrays)
 	. SourceFile.sh "lib.sh"

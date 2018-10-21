@@ -6,7 +6,7 @@ MAIN_SETUP=1
 # The next lines needs to be included and executed in each subfile if variable "MAIN_SETUP" does not exist or is 0
 Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
 Github_Branch="master"
-UseLocalFiles=0	# This variable is for developement purposes, so that we don't have to push changes in a file to github befor testing it.
+UseLocalFiles=1	# This variable is for developement purposes, so that we don't have to push changes in a file to github befor testing it.
 Local_Repository="/home/georg/github/ggeorgg/setup-server"
 wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
 # Include functions (download the config file and read it to arrays)
@@ -18,7 +18,7 @@ wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branc
 
 
 workflow=()
-workflow+=("${Local_Repository}/${DIR_STATIC}/adduser.sh")
+workflow+=("${DIR_STATIC}/adduser.sh")
 # workflow+=("${DIR_STATIC}/format-device.sh")
 # workflow+=("${DIR_STATIC}/Setup-Webserver.sh")
 # workflow[0]="SetupWebserver"
@@ -101,11 +101,12 @@ echo "${workflow[@]}"
 
 any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
-whoami
+# whoami
 for script in "${workflow[@]}"; do
 	. "${Local_Repository}/SourceFile.sh" "${script}"
 done
-whoami
+# whoami
 
 ## Clear downloads
+exit
 rm "${Local_Repository}/config.cfg"
