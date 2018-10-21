@@ -26,7 +26,7 @@ IFS=$SAVEIFS
 
 for dev in "${DEVICES[@]}"
 do
-	if [ "${DataDisk[Devices]}"="$dev" ]
+	if [ "${DataDisk[Devices]}" = "$dev" ]
 	then
 		DEVICES_WHIPTAILTABLE+=("$dev" ""  "ON" )
 	else

@@ -1,28 +1,27 @@
 #!/bin/bash
-Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
-Github_Branch="master"
-
 if [ -z "$subshell_active" ]
 then
-
-	# Install curl if not existing
-	if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
-	then
-		echo "curl OK"
-	else
-		apt update -q4
-		apt install curl -y
-	fi
-
+	Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
+	Github_Branch="master"
+	UseLocalFiles=1	# This variable is for developement purposes, so that we don't have to push changes in a file to github befor testing it.
+	Local_Repository=/home/georg/github/ggeorgg/setup-server
+	sudo wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
 	# Include functions (download the config file and read it to arrays)
-	source <(curl -sL "${Github_Repository}/${Github_Branch}/lib.sh")
+	. SourceFile.sh "lib.sh"
+
 	subshell_active=1
+	
+	## Questions
+	. SourceFile.sh "${Local_Repository}/${DIR_Questions}/AddUserQuestions.sh"
+	
 fi
 
 if [ "$SUDO_USER" = "root" ]
 then
 	# creating a new user is mandatory 
 	SudoUser[Adduser]=1
+else
+	echo "You are not the root user"
 fi
 
 if [ "${SudoUser[Adduser]}" -eq 1 ]

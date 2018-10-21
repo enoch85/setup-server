@@ -7,7 +7,7 @@ source SourceFile.sh "GlobalParameter.cfg"
 subshell_active=0
 # Config already available? If not, load it from Github.
 if [ ! -f "$CONFIG_FILE_PATH" ]; then
-	# It is not the main file that has been called but the subscript.
+	# It is not the main file that has been called but the subscript because the config file does not exist
     echo "Config file not found - Getting the default one from github.com!"
 	wget "${Github_Repository}/${Github_Branch}/config.cfg"
 	if [ "$MAIN_SETUP -neq 1" ]; then
