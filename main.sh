@@ -1,24 +1,16 @@
 #!/bin/bash
 # MAIN_SETUP needs to be set here to prevent the functions.sh import to set subshell_active=1
 MAIN_SETUP=1
+
+
+# The next lines needs to be included and executet in each subfile if variable "MAIN_SETUP" does not exist or is 0
 Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
 Github_Branch="master"
 UseLocalFiles=1
 
 wget -O "File.sh" "${Github_Repository}/${Github_Branch}/File.sh"
-
-# Install curl if not existing
-if [ "$(dpkg-query -W -f='${Status}' "curl" 2>/dev/null | grep -c "ok installed")" == "1" ]
-then
-    echo "curl OK"
-else
-    apt update -q4
-    apt install curl -y
-fi
-
 # Include functions (download the config file and read it to arrays)
 source File.sh "lib.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/lib.sh")
 
 ###############################################################################################
 ###############################################################################################
@@ -47,7 +39,6 @@ workflow+=("${DIR_STATIC}/adduser.sh")
 # ...
 
 source File.sh "${DIR_Questions}/SetupQuestions.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/SetupQuestions.sh")
 
 ## Edit ${CONFIG} file according to the users wishes
 
@@ -73,7 +64,6 @@ SetupServerMethod[AdvancedSetup]=0
 
 
 source File.sh "${DIR_Questions}/DataDiskQuestions.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DataDiskQuestions.sh")
 
 fi
 
@@ -86,19 +76,14 @@ SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=1
 
 source File.sh "${DIR_Questions}/TimezoneQuestions.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/TimezoneQuestions.sh")
 
 source File.sh "${DIR_Questions}/DatabaseQuestions.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/DatabaseQuestions.sh")
 
 source File.sh "${DIR_Questions}/NextcloudAppsQuestions.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/NextcloudAppsQuestions.sh")
 
 source File.sh "${DIR_Questions}/OfficeQuestions.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/OfficeQuestions.sh")
 
 source File.sh "${DIR_Questions}/CommunicationQuestions.sh"
-# source <(curl -sL "${Github_Repository}/${Github_Branch}/${DIR_Questions}/CommunicationQuestions.sh")
 fi
 
 ## Display Warnings and messages?
@@ -121,5 +106,4 @@ any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 for script in "${workflow[@]}"
 do
 	source File.sh "${script}"
-	# source <(curl -sL "${Github_Repository}/${Github_Branch}/${script}")
 done

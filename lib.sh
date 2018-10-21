@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Global parameters
-Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
-Github_Branch="master"
-source <(curl -sL "${Github_Repository}/${Github_Branch}/global-parameter.cfg")
+source File.sh "GlobalParamter.cfg"
 
 
 subshell_active=0
