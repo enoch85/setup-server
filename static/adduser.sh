@@ -29,7 +29,5 @@ You will be prompted to choose a password"
 	done
 	# Execute script with the new user?
 	sudo su "${SudoUser[Username]}"
-	echo "user switched"
 	# sudo -u "${SudoUser[Username]}"  sudo bash "$1"
-	# exit
 fi

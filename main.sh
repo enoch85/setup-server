@@ -101,11 +101,9 @@ echo "${workflow[@]}"
 
 any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
-# whoami
 for script in "${workflow[@]}"; do
 	. "${Local_Repository}/SourceFile.sh" "${script}"
 done
-# whoami
 
 ## Clear downloads
-# rm "${Local_Repository}/config.cfg"
+rm "${Local_Repository}/config.cfg"
