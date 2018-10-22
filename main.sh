@@ -47,6 +47,10 @@ SetupServerMethod[NoInteraction]=1
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=0
 
+# Check if config file is misconfigured (needs to be done only in the NoInteraction Setup
+# because in the other cases the script will handle the correctness of the config file
+. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/CheckConfig.sh"
+
 # Start of Timezone Block
 # Set Timezone non interactive ( Only if SETUP = NoInteraction), else: Ask directly for it.
 sudo timedatectl set-timezone "${Timezone[Continent]}/${Timezone[City]}"
