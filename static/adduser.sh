@@ -27,7 +27,13 @@ You will be prompted to choose a password"
 	do
 		sudo passwd "${SudoUser[Username]}" && break
 	done
-	# Execute script with the new user?
-	sudo su "${SudoUser[Username]}"
-	# sudo -u "${SudoUser[Username]}"  sudo bash "$1"
+	if [ "$MAIN_SETUP" -eq "1" ]; then
+		# Set flag for main.sh
+		DoNotEdit[SkipQuestions]=1
+		# Save workflow and config
+		. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh"
+		
+		# Execute script with the new user
+		sudo -u "${SudoUser[Username]}"  "sudo bash ${Local_Repository}/main.sh"
+	fi
 fi

@@ -18,7 +18,7 @@ wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branc
 
 
 workflow=()
-workflow+=("${DIR_STATIC}/adduser.sh")
+# workflow+=("${DIR_STATIC}/adduser.sh")
 # workflow+=("${DIR_STATIC}/format-device.sh")
 # workflow+=("${DIR_STATIC}/Setup-Webserver.sh")
 # workflow[0]="SetupWebserver"
@@ -37,6 +37,11 @@ workflow+=("${DIR_STATIC}/adduser.sh")
 # workflow[13]="StaticIP"
 # workflow[14]="SecureSSH"
 # ...
+
+
+. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh workflow workflow.cfg"
+
+exit
 
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/SetupQuestions.sh"
 
@@ -111,7 +116,7 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh"
+. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh arrays config.cfg"
 
 ## Execute the needed scripts in the right order.
 
@@ -125,4 +130,4 @@ for script in "${workflow[@]}"; do
 done
 
 ## Clear downloads
-rm "${Local_Repository}/config.cfg"
+. "${Local_Repository}/SourceFile.sh" "cleanup.sh"

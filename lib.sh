@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Global parameters
-source "${Local_Repository}/SourceFile.sh" "GlobalParameter.cfg"
+. "${Local_Repository}/SourceFile.sh" "GlobalParameter.cfg"
 
 # Config already available? If not, load it from Github.
 if [ ! -f "${Local_Repository}/config.cfg" ]; then
@@ -11,7 +11,7 @@ if [ ! -f "${Local_Repository}/config.cfg" ]; then
 fi
 
 # Read config file to arrays
-source "${Local_Repository}/SourceFile.sh" "config2array.sh"
+. "${Local_Repository}/SourceFile.sh" "readconfig2array.sh"
 
 # arrays=()
 # while read line; do 
