@@ -3,29 +3,26 @@
 # Global parameters
 source "${Local_Repository}/SourceFile.sh" "GlobalParameter.cfg"
 
-
-subshell_active=0
 # Config already available? If not, load it from Github.
 if [ ! -f "${Local_Repository}/config.cfg" ]; then
 	# It is not the main file that has been called but the subscript because the config file does not exist
     echo "Config file not found - Getting the default one from github.com!"
 	wget -O "${Local_Repository}/config.cfg" "${Github_Repository}/${Github_Branch}/config.cfg"
-	if [ "$MAIN_SETUP -neq 1" ]; then
-		subshell_active=1
-	fi
 fi
 
 # Read config file to arrays
-arrays=()
-while read line; do 
-    if [[ $line =~ ^"["(.+)"]"$ ]]; then 
-        arrname=${BASH_REMATCH[1]}
-        declare -A $arrname
-		arrays+=("$arrname")
-    elif [[ $line =~ ^([_[:alpha:]][_[:alnum:]]*)"="(.*) ]]; then 
-        declare ${arrname}[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
-    fi
-done < "${Local_Repository}/config.cfg"
+source "${Local_Repository}/SourceFile.sh" "config2array.sh"
+
+# arrays=()
+# while read line; do 
+    # if [[ $line =~ ^"["(.+)"]"$ ]]; then 
+        # arrname=${BASH_REMATCH[1]}
+        # declare -A $arrname
+		# arrays+=("$arrname")
+    # elif [[ $line =~ ^([_[:alpha:]][_[:alnum:]]*)"="(.*) ]]; then 
+        # declare ${arrname}[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
+    # fi
+# done < "${Local_Repository}/config.cfg"
 
 
 ### Begin of functions

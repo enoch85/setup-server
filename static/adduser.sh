@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -z "$subshell_active" ]
+if [ -z "$MAIN_SETUP" ]
 then
 	Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
 	Github_Branch="master"
@@ -9,7 +9,7 @@ then
 	# Include functions (download the config file and read it to arrays)
 	. "${Local_Repository}/SourceFile.sh" "lib.sh"
 
-	subshell_active=1
+	MAIN_SETUP=0
 		
 	## Questions
 	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
