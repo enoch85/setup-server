@@ -1,4 +1,5 @@
 if [ ! -f "${Local_Repository}/$1" ] || [ "${UseLocalFiles}" -eq 0 ]; then
+	echo "Input is: $1"
 	filepath=$(echo $1 | awk '{print $1;}')
 	echo "We will now get the file:"
 	echo "${Github_Repository}/${Github_Branch}/$filepath"
