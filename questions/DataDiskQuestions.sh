@@ -12,6 +12,34 @@ DataDisk[Devices]="$DEVICE"
 
 # Start of Data disk Block - New
 
+DataDisk[Location]=$(whiptail --title "Nextcloud data location" --radiolist --separate-output \
+"Do you want to format one or more devices to put your data on or do you just want to have your data on your system disk?\nSelect by pressing the spacebar"  \
+"$WT_HEIGHT" "$WT_WIDTH" 3 \
+"SystemDisk"      "You will have to choose a folder later." "ON" \
+"DifferentDevice" "You will have to choose one or more disks which will be wiped completly." "OFF" \
+3>&1 1>&2 2>&3)
+
+exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+clear
+
+echo "${DataDisk[@]}"
+exit
+
+# case "$COMMUNICATION" in
+	# Talk)
+		# Communication[Talk]=1
+		# Communication[SpreedMe]=0
+	# ;;		
+	# SpreedMe)
+		# Communication[Talk]=0
+		# Communication[SpreedMe]=1
+	# ;;
+	# *)
+		
+	# ;;
+# esac
+
+
 
 DEVICES=$(lsblk | grep "disk" | awk '{print $1}')
 
@@ -34,7 +62,7 @@ do
 	fi
 done
 
-SELECTEDDEVICES=$(whiptail --title "Nextcloud apps" --checklist --separate-output \
+SELECTEDDEVICES=$(whiptail --title "Nextcloud data device" --checklist --separate-output \
 "Select the devices where you want to put your data on. \n(De-)Select by pressing the spacebar" \
 "$WT_HEIGHT" "$WT_WIDTH" 11 \
 "${DEVICES_WHIPTAILTABLE[@]}" \

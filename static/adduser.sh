@@ -36,7 +36,7 @@ You will be prompted to choose a password"
 		. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh config.cfg"
 		
 		echo "We will now execute the main script again, but we will skip the questions."
-		# Execute script with the new user
+		# Execute script with the new user (use exec to not continue the script after this line)
 		exec sudo -u "${SudoUser[Username]}"  "sudo bash ${Local_Repository}/main.sh"
 	fi
 fi

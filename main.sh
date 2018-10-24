@@ -60,6 +60,7 @@ sudo timedatectl set-timezone "${Timezone[Continent]}/${Timezone[City]}"
 # End: Set Timezone'
 fi
 
+
 if [ "$SETUP" = "SimpleSetup" ]; then
 # Simple Setup has been choosen. Change the most required settings.
 SetupServerMethod[NoInteraction]=0
