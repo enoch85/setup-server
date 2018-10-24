@@ -35,13 +35,13 @@ do
 done
 
 SELECTEDDEVICES=$(whiptail --title "Nextcloud apps" --checklist --separate-output \
-"Automatically configure and install selected apps\n(De-)Select by pressing the spacebar" \
+"Select the devices where you want to put your data on. \n(De-)Select by pressing the spacebar" \
 "$WT_HEIGHT" "$WT_WIDTH" 11 \
 "${DEVICES_WHIPTAILTABLE[@]}" \
 3>&1 1>&2 2>&3)
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
-
+clear
 
 # # Append "/dev/ to each line
 # SELECTEDDEVICES=$(printf "$SELECTEDDEVICES" | sed 's#^#/dev/#')
@@ -61,5 +61,33 @@ exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
 SELECTEDDEVICES=$(echo $SELECTEDDEVICES | tr '\n' ' ')
 
 DataDisk[Devices]="$SELECTEDDEVICES"
+
+
+if [ "${SetupServerMethod[AdvancedSetup]}" -eq "1" ]; then
+############################
+
+FILESYSTEM=$(whiptail --title "Database" --radiolist --separate-output \
+"Choose your database managment system\nSelect by pressing the spacebar"  \
+"$WT_HEIGHT" "$WT_WIDTH" 2 \
+"EXT4"    "           " "OFF" \
+"ZFS" "           " "ON" \
+3>&1 1>&2 2>&3)
+
+exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+clear 
+
+case "$FILESYSTEM" in
+	EXT4)
+		DataDisk[DataDiskFormat]=EXT4
+	;;		
+	ZFS)
+		DataDisk[DataDiskFormat]=ZFS
+	;;
+	*)
+		
+	;;
+esac
+
+fi
 
 # End: Data disk Block - New'

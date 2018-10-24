@@ -7,6 +7,8 @@ OFFICE=$(whiptail --title "OFFICE" --radiolist --separate-output \
 3>&1 1>&2 2>&3)
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+clear
+
 case "$OFFICE" in
 	OnlyOffice)
 		Office[OnlyOffice]=1

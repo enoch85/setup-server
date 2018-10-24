@@ -7,6 +7,7 @@ COMMUNICATION=$(whiptail --title "Communication" --radiolist --separate-output \
 3>&1 1>&2 2>&3)
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+clear
 
 case "$COMMUNICATION" in
 	Talk)

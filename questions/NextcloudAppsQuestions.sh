@@ -7,6 +7,7 @@ NC_APPS_ACTIVATED=$(whiptail --title "Nextcloud apps" --checklist --separate-out
 "$WT_HEIGHT" "$WT_WIDTH" 11 \
 "${NC_APPS_WHIPTAILTABLE[@]}" \
 3>&1 1>&2 2>&3)
+clear
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
 

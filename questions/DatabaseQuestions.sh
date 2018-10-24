@@ -6,6 +6,7 @@ DATABASE=$(whiptail --title "Database" --radiolist --separate-output \
 3>&1 1>&2 2>&3)
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+clear
 
 case "$DATABASE" in
 	MariaDB)

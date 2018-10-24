@@ -2,13 +2,14 @@
 # MAIN_SETUP needs to be set here to prevent the functions.sh import to set subshell_active=1
 MAIN_SETUP=1
 
-
 # The next lines needs to be included and executed in each subfile if variable "MAIN_SETUP" does not exist or is 0
 Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
 Github_Branch="master"
 UseLocalFiles=1	# This variable is for developement purposes, so that we don't have to push changes in a file to github befor testing it.
 Local_Repository="/home/georg/github/ggeorgg/setup-server"
+if [ ! -f "${Local_Repository}/SourceFile.sh" ] || [ "${UseLocalFiles}" -eq 0 ]; then
 wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
+fi
 # Include functions (download the config file and read it to arrays)
 . "${Local_Repository}/SourceFile.sh" "lib.sh"
 
@@ -16,10 +17,11 @@ wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branc
 ###############################################################################################
 ###############################################################################################
 
+if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 
 workflow=()
-# workflow+=("${DIR_STATIC}/adduser.sh")
-# workflow+=("${DIR_STATIC}/format-device.sh")
+workflow+=("${DIR_STATIC}/adduser.sh")
+workflow+=("${DIR_STATIC}/format-device.sh")
 # workflow+=("${DIR_STATIC}/Setup-Webserver.sh")
 # workflow[0]="SetupWebserver"
 # workflow[1]="SetupDatabase"
@@ -38,16 +40,11 @@ workflow=()
 # workflow[14]="SecureSSH"
 # ...
 
-
-. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh workflow workflow.cfg"
-
-exit
-
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/SetupQuestions.sh"
 
 ## Edit ${CONFIG} file according to the users wishes
 
-if [ "$SETUP" -eq "0" ]; then
+if [ "$SETUP" = "NoInteraction" ]; then
 SetupServerMethod[NoInteraction]=1
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=0
@@ -63,27 +60,30 @@ sudo timedatectl set-timezone "${Timezone[Continent]}/${Timezone[City]}"
 # End: Set Timezone'
 fi
 
-if [ "$SETUP" -gt "0" ]; then
+if [ "$SETUP" = "SimpleSetup" ]; then
 # Simple Setup has been choosen. Change the most required settings.
 SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=1
 SetupServerMethod[AdvancedSetup]=0
 
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
 
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DataDiskQuestions.sh"
 
 fi
 
 
-if [ "$SETUP" -gt "1" ]; then
+if [ "$SETUP" = "AdvancedSetup" ]; then
 # Advanced Setup has been choosen. Ask the user all available questions which have not been displayed yet.
 SetupServerMethod[NoInteraction]=0
 SetupServerMethod[SimpleSetup]=0
 SetupServerMethod[AdvancedSetup]=1
 
-. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/TimezoneQuestions.sh"
-
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
+
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DataDiskQuestions.sh"
+
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/TimezoneQuestions.sh"
 
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DatabaseQuestions.sh"
 
@@ -116,18 +116,24 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh arrays config.cfg"
+. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh" "config.cfg"
 
 ## Execute the needed scripts in the right order.
 
 echo "Here is a List of scripts that will be executed now."
-echo "${workflow[@]}"
+printf " - %s\n" "${workflow[@]}"
 
 any_key "Press any key to execute the scripts. Press CTRL+C to abort"
 
-for script in "${workflow[@]}"; do
-	. "${Local_Repository}/SourceFile.sh" "${script}"
-done
+# Write the workflow array to a file
+printf "%s\n" "${workflow[@]}" > workflow.txt
+
+else
+	echo "Main has already been executed once. This is why we do not display the questions again."
+fi
+
+# Process the scripts / Continue processing the scripts (if e.g. the adduser.sh has rerun the main.sh script)
+. "${Local_Repository}/SourceFile.sh" "process_queue.sh" "workflow.txt"
 
 ## Clear downloads
 . "${Local_Repository}/SourceFile.sh" "cleanup.sh"
