@@ -39,13 +39,15 @@ function ask_yes_or_no() {
 function is_this_installed() {
 if [ "$(dpkg-query -W -f='${Status}' "${1}" 2>/dev/null | grep -c "ok installed")" == "1" ]
 then
-    echo "${1} is installed."
-    exit 1
+    # echo "${1} is installed."
+	echo 1
+else
+	echo 0
 fi
 }
 
 function install_if_not () {
-if [[ "$(is_this_installed "${1}")" != "${1} is installed." ]]
+if [[ "$(is_this_installed "${1}")" -eq "0" ]]
 then
     apt update -q4 & spinner_loading && apt install "${1}" -y
 fi

@@ -10,112 +10,153 @@ DataDisk[Devices]="$DEVICE"
 # End: Data disk Block - Old'
 
 
-# Start of Data disk Block - New
-
 DataDisk[Location]=$(whiptail --title "Nextcloud data location" --radiolist --separate-output \
 "Do you want to format one or more devices to put your data on or do you just want to have your data on your system disk?\nSelect by pressing the spacebar"  \
 "$WT_HEIGHT" "$WT_WIDTH" 3 \
 "SystemDisk"      "You will have to choose a folder later." "ON" \
-"DifferentDevice" "You will have to choose one or more disks which will be wiped completly." "OFF" \
+"DifferentDevice" "You will have to choose one or more disks which will be completly wiped." "OFF" \
 3>&1 1>&2 2>&3)
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
 clear
 
-echo "${DataDisk[@]}"
-exit
-
-# case "$COMMUNICATION" in
-	# Talk)
-		# Communication[Talk]=1
-		# Communication[SpreedMe]=0
-	# ;;		
-	# SpreedMe)
-		# Communication[Talk]=0
-		# Communication[SpreedMe]=1
-	# ;;
-	# *)
-		
-	# ;;
-# esac
-
-
-
-DEVICES=$(lsblk | grep "disk" | awk '{print $1}')
-
-# Save current IFS
-SAVEIFS=$IFS
-# Change IFS to new line. 
-IFS=$'\n'
-# Create Array from whiptail output
-DEVICES=($DEVICES)
-# Restore IFS
-IFS=$SAVEIFS
-
-for dev in "${DEVICES[@]}"
-do
-	if [ "${DataDisk[Devices]}" = "$dev" ]
-	then
-		DEVICES_WHIPTAILTABLE+=("$dev" ""  "ON" )
-	else
-		DEVICES_WHIPTAILTABLE+=("$dev" ""  "OFF" )
+case "${DataDisk[Location]}" in 
+	SystemDisk)
+	if [ "$(is_this_installed dialog)" -eq "0" ]; then
+		# dialog is needed! 
+		# https://www.ubuntuupdates.org/pm/dialog
+		# This is the one for Ubuntu 18.04:
+		wget http://security.ubuntu.com/ubuntu/pool/universe/d/dialog/dialog_1.3-20171209-1_amd64.deb
+		# https://unix.stackexchange.com/questions/159094/how-to-install-a-deb-file-by-dpkg-i-or-by-apt
+		sudo apt install ./dialog_1.3-20171209-1_amd64.deb
+		# delete dialog afterward? Delete the .deb file afterward? Maybe in the cleanup file?
 	fi
-done
+	
+msg_box "Use  tab  or  arrow keys to move between the windows. Within the directory window, \
+use the up/down arrow keys to scroll the current selection. Use the space-bar to copy the \
+current selection into the text-entry window.
 
-SELECTEDDEVICES=$(whiptail --title "Nextcloud data device" --checklist --separate-output \
-"Select the devices where you want to put your data on. \n(De-)Select by pressing the spacebar" \
-"$WT_HEIGHT" "$WT_WIDTH" 11 \
-"${DEVICES_WHIPTAILTABLE[@]}" \
-3>&1 1>&2 2>&3)
+Typing  any  printable characters switches focus to the text-entry window, entering that \
+character as well as scrolling the directory window to the closest match.
 
-exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
-clear
+You also can first navigate to a directory an then type in name for a new directory.
 
-# # Append "/dev/ to each line
-# SELECTEDDEVICES=$(printf "$SELECTEDDEVICES" | sed 's#^#/dev/#')
+Use a carriage return or the 'OK' button to accept the current value in the text-entry window and exit."
+					  
+		LINES=20
+		COLUMNS=40
+		DefaultDirectory="/home/$(who am i | awk '{print $1;}')/ncdata"
+		NCDATADIRECTORY=$(dialog --stdout --title "Please choose a directory for your Nextcloud data" --dselect $DefaultDirectory  $LINES $COLUMNS)
+
+		exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+		
+		# Check if current user has write permissions to this folder? If not let the user try again?
+		
+		# create folder if it does not exist (with the correct permissions!)
+		if [ ! -d "$NCDATADIRECTORY" ]; then
+			mkdir -p "$NCDATADIRECTORY"
+		fi
+		
+		DataDisk[Directory]="$NCDATADIRECTORY"
+		
+	;;
+	DifferentDevice)
+	
+	
+	
+	
+AvailableDEVICES=$(lsblk | grep "disk" | awk '{print $1}')
+
+		# Save current IFS
+		SAVEIFS=$IFS
+		# Change IFS to new line. 
+		IFS=$'\n'
+		# Create Array from whiptail output
+		AvailableDEVICES=($AvailableDEVICES)
+		# Restore IFS
+		IFS=$SAVEIFS
+
+		# configinput='sdb sdc'
+		SELECTEDDEVICES=$(echo ${DataDisk[Devices]} | tr " " "\n")
+		# Append "/dev/ to each line
+		# SELECTEDDEVICES=$(printf "$SELECTEDDEVICES" | sed 's#^#/dev/#')
+
+		# Convert to Array
+		# Save current IFS
+		SAVEIFS=$IFS
+		# Change IFS to new line. 
+		IFS=$'\n'
+		# Create Array from whiptail output
+		SELECTEDDEVICES=($SELECTEDDEVICES)
+		# Restore IFS
+		IFS=$SAVEIFS
+
+		# echo ${AvailableDEVICES[@]}
+		# echo ${SELECTEDDEVICES[@]}
+
+		for idx in "${AvailableDEVICES[@]}"; do
+			skip=
+			for j in "${SELECTEDDEVICES[@]}"; do
+				# echo "idx = j: $idx = $j"
+				[[ $idx == $j ]] && { skip=1; DEVICES_WHIPTAILTABLE+=("$idx" ""  "ON" ); break; }	
+			done
+			[[ -n $skip ]] || DEVICES_WHIPTAILTABLE+=("$idx" ""  "OFF" )
+		done
+
+		SELECTEDDEVICES=$(whiptail --title "Nextcloud data device" --checklist --separate-output \
+		"Select the devices where you want to put your data on. \n(De-)Select by pressing the spacebar" \
+		"$WT_HEIGHT" "$WT_WIDTH" 11 \
+		"${DEVICES_WHIPTAILTABLE[@]}" \
+		3>&1 1>&2 2>&3)
+
+		exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+		clear
+
+		# # Append "/dev/ to each line
+		# SELECTEDDEVICES=$(printf "$SELECTEDDEVICES" | sed 's#^#/dev/#')
 
 
-# # Convert to Array
-# # Save current IFS
-# SAVEIFS=$IFS
-# # Change IFS to new line. 
-# IFS=$'\n'
-# # Create Array from whiptail output
-# SELECTEDDEVICES=($SELECTEDDEVICES)
-# # Restore IFS
-# IFS=$SAVEIFS
+		# # Convert to Array
+		# # Save current IFS
+		# SAVEIFS=$IFS
+		# # Change IFS to new line. 
+		# IFS=$'\n'
+		# # Create Array from whiptail output
+		# SELECTEDDEVICES=($SELECTEDDEVICES)
+		# # Restore IFS
+		# IFS=$SAVEIFS
 
 
-SELECTEDDEVICES=$(echo $SELECTEDDEVICES | tr '\n' ' ')
+		SELECTEDDEVICES=$(echo $SELECTEDDEVICES | tr '\n' ' ')
 
-DataDisk[Devices]="$SELECTEDDEVICES"
-
-
-if [ "${SetupServerMethod[AdvancedSetup]}" -eq "1" ]; then
-############################
-
-FILESYSTEM=$(whiptail --title "Database" --radiolist --separate-output \
-"Choose your database managment system\nSelect by pressing the spacebar"  \
-"$WT_HEIGHT" "$WT_WIDTH" 2 \
-"EXT4"    "           " "OFF" \
-"ZFS" "           " "ON" \
-3>&1 1>&2 2>&3)
-
-exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
-clear 
-
-case "$FILESYSTEM" in
-	EXT4)
-		DataDisk[DataDiskFormat]=EXT4
-	;;		
-	ZFS)
-		DataDisk[DataDiskFormat]=ZFS
+		DataDisk[Devices]="$SELECTEDDEVICES"
 	;;
 	*)
-		
+	
 	;;
 esac
 
-fi
+if [ "$MAIN_SETUP" -eq "0" ] || [ "${SetupServerMethod[AdvancedSetup]}" -eq "1" ]; then
 
-# End: Data disk Block - New'
+	FILESYSTEM=$(whiptail --title "Database" --radiolist --separate-output \
+	"Choose your database managment system\nSelect by pressing the spacebar"  \
+	"$WT_HEIGHT" "$WT_WIDTH" 2 \
+	"EXT4"    "           " "OFF" \
+	"ZFS" "           " "ON" \
+	3>&1 1>&2 2>&3)
+
+	exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+	clear 
+
+	case "$FILESYSTEM" in
+		EXT4)
+			DataDisk[DataDiskFormat]=EXT4
+		;;		
+		ZFS)
+			DataDisk[DataDiskFormat]=ZFS
+		;;
+		*)
+			
+		;;
+	esac
+fi
