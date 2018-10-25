@@ -19,13 +19,19 @@ then
 fi
 
 
+
+LABEL_=ncdata
+MOUNT_=/mnt/$LABEL_
+# mkdir if not existing
+sudo mkdir -p "$MOUNT_"	# Do we need sudo here? Only needed when creating a directory for eg. in /mnt/
+
 case "${DataDisk[Location]}" in 
 	SystemDisk)
 		# NC Data will be put on in the choosen folder
 		echo "SystemDisk"
 	;;
 	
-	DifferentDevice)	
+	DifferentDevice)
 		# Append "/dev/ to each line
 		SELECTEDDEVICES=$(echo ${DataDisk[Devices]} | tr ' ' '\n')
 		SELECTEDDEVICES=$(printf "$SELECTEDDEVICES" | sed 's#^#/dev/#')
@@ -42,8 +48,6 @@ case "${DataDisk[Location]}" in
 		
 		echo "${SELECTEDDEVICES[@]}"
 
-		exit
-
 		#sudo vgremove DATA -y
 
 		## Create LVM System for ncdata
@@ -51,19 +55,21 @@ case "${DataDisk[Location]}" in
 		# Initialize Partitions as Physical Volumes
 		for seldev in "${SELECTEDDEVICES[@]}"
 		do
-		check_command pvcreate "$seldev"
+		check_command sudo pvcreate "$seldev"
 		done
 
 		# Create Volume Group 
-		check_command vgcreate DATA "${SELECTEDDEVICES[@]}"
+		check_command sudo vgcreate DATA "${SELECTEDDEVICES[@]}"
 
 		# Create Logical Volume
-		check_command lvcreate -l 60%FREE -n NCDATA DATA
+		check_command sudo lvcreate -l 60%FREE -n NCDATA DATA
 
 		case "${DataDisk[DataDiskFormat]}" in
 			EXT4)
-				mkfs.ext4 /dev/DATA/NCDATA
-			;;		
+				sudo mkfs.ext4 /dev/DATA/NCDATA
+				sudo mount /dev/DATA/NCDATA $MOUNT_
+						
+			;;
 			ZFS)
 				install_if_not "zfsutils-linux"
 
@@ -74,30 +80,35 @@ case "${DataDisk[Location]}" in
 
 				if zpool list | grep "$LABEL_" > /dev/null
 				then
-					check_command zpool destroy "$LABEL_"
+					check_command sudo zpool destroy "$LABEL_"
 				fi
-				check_command wipefs -a -f "$DISKTYPE"
+				check_command sudo wipefs -a -f "$DISKTYPE"
 				sleep 0.5
-				check_command zpool create -f -o ashift=12 "$LABEL_" "$DISKTYPE"
-				check_command zpool set failmode=continue "$LABEL_"
-				check_command zfs set mountpoint="$MOUNT_" "$LABEL_"
-				check_command zfs set compression=lz4 "$LABEL_"
-				check_command zfs set sync=standard "$LABEL_"
-				check_command zfs set xattr=sa "$LABEL_"
-				check_command zfs set primarycache=all "$LABEL_"
-				check_command zfs set atime=off "$LABEL_"
-				check_command zfs set recordsize=128k "$LABEL_"
-				check_command zfs set logbias=latency "$LABEL_"
+				check_command sudo zpool create -f -o ashift=12 "$LABEL_" "$DISKTYPE"
+				check_command sudo zpool set failmode=continue "$LABEL_"
+				check_command sudo zfs set mountpoint="$MOUNT_" "$LABEL_"
+				check_command sudo zfs set compression=lz4 "$LABEL_"
+				check_command sudo zfs set sync=standard "$LABEL_"
+				check_command sudo zfs set xattr=sa "$LABEL_"
+				check_command sudo zfs set primarycache=all "$LABEL_"
+				check_command sudo zfs set atime=off "$LABEL_"
+				check_command sudo zfs set recordsize=128k "$LABEL_"
+				check_command sudo zfs set logbias=latency "$LABEL_"
 			;;
 			*)
 				
 			;;
 		esac
+
+	# umount if mounted
+	# umount /mnt/* &> /dev/null
+
 	;;
 	*)
 	
 	;;
 esac	
+
 
 
 	# umount /dev/sdb*

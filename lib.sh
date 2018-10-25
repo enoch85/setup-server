@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Global parameters
-. "${Local_Repository}/SourceFile.sh" "GlobalParameter.cfg"
+. "${Local_Repository}/SourceFile.sh" "GlobalParameter.sh"
 
 # Config already available? If not, load it from Github.
 if [ ! -f "${Local_Repository}/config.cfg" ]; then
@@ -49,7 +49,7 @@ fi
 function install_if_not () {
 if [[ "$(is_this_installed "${1}")" -eq "0" ]]
 then
-    apt update -q4 & spinner_loading && apt install "${1}" -y
+    sudo apt update -q4 & spinner_loading && sudo apt install "${1}" -y
 fi
 }
 

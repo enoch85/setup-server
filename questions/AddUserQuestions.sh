@@ -6,14 +6,16 @@
 askquestion=1 # Default value for standalone script
 
 
-if [ "$MAIN_SETUP" = 1 ] && [ "$(whoami)" = "root" ]; then
+if [ "$MAIN_SETUP" = 1 ] && [ "$(who am i | awk '{print $1;}')" = "root" ]; then
 	SudoUser[Adduser]=1
 	askquestion=0
-	msg_box "Creating a new user is mandatory because we don't run the script as pure root user"
+	msg_box "Creating a new user is mandatory because we won't run the script as pure root user."
 elif [ "$MAIN_SETUP" = 1 ] && ! [ -z "$((sudo -v) 2>&1)" ]; then
 	SudoUser[Adduser]=1
 	askquestion=0
-	msg_box "Creating a new user is mandatory because the user needs to be in sudoers group"
+	msg_box "You haved switched the user to root user ('sudo su') and executed the command 'sudo main.sh'. This is not possible."
+elif [ "$SUDO_USER" = "root" ]; then
+	msg_box "Creating a new user is mandatory because the user needs to be in sudoers group."
 elif [ "$MAIN_SETUP" = 1 ] && [ "${SetupServerMethod[SimpleSetup]}" -eq "1" ]; then
 	# Do not ask for user creation because we want to keep the SimpleSetup as simple as possible
 	# This may also be the default config value so we do not need it here.

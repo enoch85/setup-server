@@ -12,9 +12,9 @@ DataDisk[Devices]="$DEVICE"
 
 DataDisk[Location]=$(whiptail --title "Nextcloud data location" --radiolist --separate-output \
 "Do you want to format one or more devices to put your data on or do you just want to have your data on your system disk?\nSelect by pressing the spacebar"  \
-"$WT_HEIGHT" "$WT_WIDTH" 3 \
+"$WT_HEIGHT" "$WT_WIDTH" 2 \
 "SystemDisk"      "You will have to choose a folder later." "ON" \
-"DifferentDevice" "You will have to choose one or more disks which will be completly wiped." "OFF" \
+"DifferentDevice" "You will have to choose one or more disks." "OFF" \
 3>&1 1>&2 2>&3)
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
@@ -130,6 +130,9 @@ AvailableDEVICES=$(lsblk | grep "disk" | awk '{print $1}')
 		SELECTEDDEVICES=$(echo $SELECTEDDEVICES | tr '\n' ' ')
 
 		DataDisk[Devices]="$SELECTEDDEVICES"
+		
+		
+		### TBD: Ask where the device should be mounted?
 	;;
 	*)
 	

@@ -22,8 +22,12 @@ if [ "${temp}" -ne "1" ]; then
 	err_msg="${err_msg}... Communication is an exclusive-or setting. You have to set exact one value to 1\n"
 fi
 
-if [ "$(whoami)" = "root" ]; then
+if [ "$(who am i | awk '{print $1;}')" = "root" ]; then
 	err_msg="${err_msg}... You can not run this script as user root\n"
+fi
+
+if [ "$SUDO_USER" = "root" ]; then
+	err_msg="${err_msg}... You haved switched the user to root user ('sudo su') and executed the command 'sudo main.sh'. This is not possible.\n"
 fi
 
 temp=$((sudo -v) 2>&1)

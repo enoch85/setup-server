@@ -1,5 +1,5 @@
-WT_HEIGHT=20
-WT_WIDTH=78
+WT_HEIGHT=$(stty size | awk '{print $1;}')
+WT_WIDTH=$(stty size | awk '{print $2;}')
 CONFIG_FILE_PATH="config.cfg"
 DIR_STATIC="static"
 DIR_Questions="questions"
