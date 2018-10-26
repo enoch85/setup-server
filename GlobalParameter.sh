@@ -3,8 +3,17 @@ WT_WIDTH=$(stty size | awk '{print $2;}')
 CONFIG_FILE_PATH="config.cfg"
 DIR_STATIC="static"
 DIR_Questions="questions"
-DIR_LETSENCRYPT="./lets-encrypt"
-DIR_APPS="./apps"
+# DIR_LETSENCRYPT="./lets-encrypt"
+# DIR_APPS="./apps"
+NCREPO="https://download.nextcloud.com/server/releases"
+
+# Ubuntu OS
+DISTRO=$(lsb_release -sd | cut -d ' ' -f 2)
+UNIV=$(apt-cache policy | grep http | awk '{print $3}' | grep universe | head -n 1 | cut -d "/" -f 2)
+
+# PHP-FPM
+PHP_INI=/etc/php/7.2/fpm/php.ini
+PHP_POOL_DIR=/etc/php/7.2/fpm/pool.d
 
 ## bash colors
 # Reset

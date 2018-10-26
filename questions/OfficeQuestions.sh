@@ -22,7 +22,8 @@ if [ "$MAIN_SETUP" -eq "0"] || [ "${SetupServerMethod[AdvancedSetup]}" -eq "1" ]
 			Office[Collabora]=1
 		;;
 		*)
-			
+			Office[OnlyOffice]=0
+			Office[Collabora]=0	
 		;;
 	esac
 fi

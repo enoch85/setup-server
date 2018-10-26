@@ -9,11 +9,21 @@ DataDisk[Devices]="$DEVICE"
 
 # End: Data disk Block - Old'
 
+if [ "$(is_this_installed dialog)" -eq "0" ]; then
+	# dialog is needed! 
+	# https://www.ubuntuupdates.org/pm/dialog
+	# This is the one for Ubuntu 18.04:
+	wget -O "${Local_Repository}/dialog/dialog_1.3-20171209-1_amd64.deb" http://security.ubuntu.com/ubuntu/pool/universe/d/dialog/dialog_1.3-20171209-1_amd64.deb
+	# https://unix.stackexchange.com/questions/159094/how-to-install-a-deb-file-by-dpkg-i-or-by-apt
+	sudo apt install ./dialog_1.3-20171209-1_amd64.deb
+	# delete dialog afterward? Delete the .deb file afterward? Maybe in the cleanup file?
+fi
+
 
 DataDisk[Location]=$(whiptail --title "Nextcloud data location" --radiolist --separate-output \
 "Do you want to format one or more devices to put your data on or do you just want to have your data on your system disk?\nSelect by pressing the spacebar"  \
 "$WT_HEIGHT" "$WT_WIDTH" 2 \
-"SystemDisk"      "You will have to choose a folder later." "ON" \
+"SystemDisk"      "You will have to choose a folder." "ON" \
 "DifferentDevice" "You will have to choose one or more disks." "OFF" \
 3>&1 1>&2 2>&3)
 
@@ -22,17 +32,9 @@ clear
 
 case "${DataDisk[Location]}" in 
 	SystemDisk)
-	if [ "$(is_this_installed dialog)" -eq "0" ]; then
-		# dialog is needed! 
-		# https://www.ubuntuupdates.org/pm/dialog
-		# This is the one for Ubuntu 18.04:
-		wget http://security.ubuntu.com/ubuntu/pool/universe/d/dialog/dialog_1.3-20171209-1_amd64.deb
-		# https://unix.stackexchange.com/questions/159094/how-to-install-a-deb-file-by-dpkg-i-or-by-apt
-		sudo apt install ./dialog_1.3-20171209-1_amd64.deb
-		# delete dialog afterward? Delete the .deb file afterward? Maybe in the cleanup file?
-	fi
-	
-msg_box "Use  tab  or  arrow keys to move between the windows. Within the directory window, \
+
+msg_box "Choose where you want to put your nextcloud data.
+Use  tab  or  arrow keys to move between the windows. Within the directory window, \
 use the up/down arrow keys to scroll the current selection. Use the space-bar to copy the \
 current selection into the text-entry window.
 
@@ -54,18 +56,15 @@ Use a carriage return or the 'OK' button to accept the current value in the text
 		
 		# create folder if it does not exist (with the correct permissions!)
 		if [ ! -d "$NCDATADIRECTORY" ]; then
-			mkdir -p "$NCDATADIRECTORY"
+			sudo mkdir -p "$NCDATADIRECTORY"
 		fi
 		
-		DataDisk[Directory]="$NCDATADIRECTORY"
+		DataDisk[DataDirectory]="$NCDATADIRECTORY"
 		
 	;;
 	DifferentDevice)
-	
-	
-	
-	
-AvailableDEVICES=$(lsblk | grep "disk" | awk '{print $1}')
+
+		AvailableDEVICES=$(lsblk | grep "disk" | awk '{print $1}')
 
 		# Save current IFS
 		SAVEIFS=$IFS
@@ -112,27 +111,39 @@ AvailableDEVICES=$(lsblk | grep "disk" | awk '{print $1}')
 		exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
 		clear
 
-		# # Append "/dev/ to each line
-		# SELECTEDDEVICES=$(printf "$SELECTEDDEVICES" | sed 's#^#/dev/#')
-
-
-		# # Convert to Array
-		# # Save current IFS
-		# SAVEIFS=$IFS
-		# # Change IFS to new line. 
-		# IFS=$'\n'
-		# # Create Array from whiptail output
-		# SELECTEDDEVICES=($SELECTEDDEVICES)
-		# # Restore IFS
-		# IFS=$SAVEIFS
-
-
 		SELECTEDDEVICES=$(echo $SELECTEDDEVICES | tr '\n' ' ')
 
 		DataDisk[Devices]="$SELECTEDDEVICES"
 		
 		
-		### TBD: Ask where the device should be mounted?
+msg_box "Choose now where you want to mount the device(s).
+Use  tab  or  arrow keys to move between the windows. Within the directory window, \
+use the up/down arrow keys to scroll the current selection. Use the space-bar to copy the \
+current selection into the text-entry window.
+
+Typing  any  printable characters switches focus to the text-entry window, entering that \
+character as well as scrolling the directory window to the closest match.
+
+You also can first navigate to a directory an then type in name for a new directory.
+
+Use a carriage return or the 'OK' button to accept the current value in the text-entry window and exit."
+					  
+		LINES=20
+		COLUMNS=40
+		DefaultDirectory="/mnt/ncdata"
+		NCMountPoint=$(dialog --stdout --title "Please choose the mount directory for your Nextcloud data" --dselect $DefaultDirectory  $LINES $COLUMNS)
+
+		exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+		
+		# Check if current user has write permissions to this folder? If not let the user try again?
+		
+		# create folder if it does not exist (with the correct permissions!)
+		if [ ! -d "$NCMountPoint" ]; then
+			sudo mkdir -p "$NCMountPoint"
+		fi
+		
+		DataDisk[DataDirectory]="$NCMountPoint"
+		
 	;;
 	*)
 	

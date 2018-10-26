@@ -21,7 +21,8 @@ if [ "$MAIN_SETUP" -eq "0"] || [ "${SetupServerMethod[AdvancedSetup]}" -eq "1" ]
 			Communication[SpreedMe]=1
 		;;
 		*)
-			
+			Communication[Talk]=0
+			Communication[SpreedMe]=0		
 		;;
 	esac
 fi

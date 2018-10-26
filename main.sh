@@ -17,12 +17,61 @@ fi
 ###############################################################################################
 ###############################################################################################
 
+# Check if dpkg or apt is running
+is_process_running apt
+is_process_running dpkg
+
+## Install needed packages
+
+install_if_not curl
+
+install_if_not lshw
+
+install_if_not net-tools
+
+# Install needed network
+install_if_not netplan.io
+install_if_not network-manager
+
+# Test RAM size (2GB min) + CPUs (min 1)
+ram_check 2 Nextcloud
+cpu_check 1 Nextcloud
+
+# Check distrobution and version
+check_distro_version
+check_universe
+
+# Check if key is available
+if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null
+then
+msg_box "Nextcloud repo is not available, exiting..."
+    exit 1
+fi
+
+# Check if it's a clean server
+# is_this_installed postgresql
+# is_this_installed apache2
+# is_this_installed php
+# is_this_installed php-fpm
+# is_this_installed php7.2-fpm
+# is_this_installed php7.1-fpm
+# is_this_installed php7.0-fpm
+# is_this_installed mysql-common
+# is_this_installed mariadb-server
+
+# Set locales
+install_if_not language-pack-en-base
+sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
+
 if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 
 workflow=()
 workflow+=("${DIR_STATIC}/adduser.sh")
+workflow+=("${DIR_STATIC}/changeDNS.sh")
 workflow+=("${DIR_STATIC}/format-device.sh")
-# workflow+=("${DIR_STATIC}/Setup-Webserver.sh")
+workflow+=("${DIR_STATIC}/SetupDatabase.sh")
+workflow+=("${DIR_STATIC}/SetupWebserver.sh")
+workflow+=("${DIR_STATIC}/SetupPHP.sh")
 # workflow[0]="SetupWebserver"
 # workflow[1]="SetupDatabase"
 # workflow[2]="SetupCloud"
@@ -85,6 +134,12 @@ SetupServerMethod[AdvancedSetup]=1
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DataDiskQuestions.sh"
 
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/TimezoneQuestions.sh"
+
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/KeyboardLayoutQuestions.sh"
+
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/BestMirrorQuestions.sh"
+
+. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/WebserverQuestions.sh"
 
 . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DatabaseQuestions.sh"
 

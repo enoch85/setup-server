@@ -21,9 +21,10 @@ fi
 
 
 LABEL_=ncdata
-MOUNT_=/mnt/$LABEL_
-# mkdir if not existing
-sudo mkdir -p "$MOUNT_"	# Do we need sudo here? Only needed when creating a directory for eg. in /mnt/
+# create folder if it does not exist (with the correct permissions?)
+if [ ! -d "${DataDisk[DataDirectory]}" ]; then
+	sudo mkdir -p "${DataDisk[DataDirectory]}"
+fi
 
 case "${DataDisk[Location]}" in 
 	SystemDisk)
@@ -67,14 +68,11 @@ case "${DataDisk[Location]}" in
 		case "${DataDisk[DataDiskFormat]}" in
 			EXT4)
 				sudo mkfs.ext4 /dev/DATA/NCDATA
-				sudo mount /dev/DATA/NCDATA $MOUNT_
+				sudo mount /dev/DATA/NCDATA "${DataDisk[DataDirectory]}"
 						
 			;;
 			ZFS)
 				install_if_not "zfsutils-linux"
-
-				LABEL_=ncdata
-				MOUNT_=/mnt/$LABEL_
 
 				DISKTYPE=/dev/DATA/NCDATA
 
@@ -86,7 +84,7 @@ case "${DataDisk[Location]}" in
 				sleep 0.5
 				check_command sudo zpool create -f -o ashift=12 "$LABEL_" "$DISKTYPE"
 				check_command sudo zpool set failmode=continue "$LABEL_"
-				check_command sudo zfs set mountpoint="$MOUNT_" "$LABEL_"
+				check_command sudo zfs set mountpoint="${DataDisk[DataDirectory]}" "$LABEL_"
 				check_command sudo zfs set compression=lz4 "$LABEL_"
 				check_command sudo zfs set sync=standard "$LABEL_"
 				check_command sudo zfs set xattr=sa "$LABEL_"
