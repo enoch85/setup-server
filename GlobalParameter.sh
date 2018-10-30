@@ -55,6 +55,8 @@ NCVERSION=$(curl -s -m 900 $NCREPO/ | sed --silent 's/.*href="nextcloud-\([^"]\+
 STABLEVERSION="nextcloud-$NCVERSION"
 NCMAJOR="${NCVERSION%%.*}"
 NCBAD=$((NCMAJOR-2))
+NCPASS=nextcloud
+
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 

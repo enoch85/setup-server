@@ -17,54 +17,7 @@ fi
 ###############################################################################################
 ###############################################################################################
 
-
-
 if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
-
-	# Check if dpkg or apt is running
-	is_process_running apt
-	is_process_running dpkg
-
-	## Install needed packages
-
-	# install_if_not curl	# witzlos, da vorher schon curl benötigt wird...
-
-	install_if_not lshw
-
-	install_if_not net-tools
-
-	# Install needed network
-	install_if_not netplan.io
-	install_if_not network-manager
-
-	# Test RAM size (2GB min) + CPUs (min 1) (Only if Office or Fulltextsearch? Or change the limits dynamicly?
-	ram_check 2 Nextcloud
-	cpu_check 1 Nextcloud
-
-	# Check distrobution and version
-	check_distro_version
-	check_universe
-
-	# Check if key is available
-	if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null; then
-		msg_box "Nextcloud repo ($NCREPO) is not available, exiting..."
-		exit 1
-	fi
-
-	# Check if it's a clean server
-	# is_this_installed postgresql
-	# is_this_installed apache2
-	# is_this_installed php
-	# is_this_installed php-fpm
-	# is_this_installed php7.2-fpm
-	# is_this_installed php7.1-fpm
-	# is_this_installed php7.0-fpm
-	# is_this_installed mysql-common
-	# is_this_installed mariadb-server
-
-	# Set locales - notwendig?
-	# install_if_not language-pack-en-base
-	# sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales
 
 	workflow=()
 	workflow+=("${DIR_STATIC}/adduser.sh")
@@ -175,8 +128,6 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	###############################################################################################
 	###############################################################################################
 
-	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh" "config.cfg"
-
 	## Execute the needed scripts in the right order.
 
 	echo "Here is a List of scripts that will be executed now."
@@ -186,9 +137,58 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	
 	# Set flag, that main script is running.
 	DoNotEdit[MainAlreadyRunning]=1
+	
+	# Save config to file because it has changed
+	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh" "config.cfg"
+	
 
 	# Write the workflow array to a file
 	printf "%s\n" "${workflow[@]}" > workflow.txt
+	
+	# Check if dpkg or apt is running
+	is_process_running apt
+	is_process_running dpkg
+
+	## Install needed packages
+
+	# install_if_not curl	# witzlos, da vorher schon curl benötigt wird...
+
+	install_if_not lshw
+
+	install_if_not net-tools
+
+	# Install needed network
+	install_if_not netplan.io
+	install_if_not network-manager
+
+	# Test RAM size (2GB min) + CPUs (min 1) (Only if Office or Fulltextsearch? Or change the limits dynamicly?
+	ram_check 2 Nextcloud
+	cpu_check 1 Nextcloud
+
+	# Check distrobution and version
+	check_distro_version
+	check_universe
+
+	# Check if key is available
+	if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null; then
+		msg_box "Nextcloud repo ($NCREPO) is not available, exiting..."
+		exit 1
+	fi	
+
+	# Check if it's a clean server
+	# is_this_installed postgresql
+	# is_this_installed apache2
+	# is_this_installed php
+	# is_this_installed php-fpm
+	# is_this_installed php7.2-fpm
+	# is_this_installed php7.1-fpm
+	# is_this_installed php7.0-fpm
+	# is_this_installed mysql-common
+	# is_this_installed mariadb-server
+
+	# Set locales - notwendig?
+	# install_if_not language-pack-en-base
+	# sudo locale-gen "sv_SE.UTF-8" && sudo dpkg-reconfigure --frontend=noninteractive locales	
 
 else
 	echo "Main has already been executed once. This is why we do not display the questions again."

@@ -1,22 +1,30 @@
-for idx in "${NextcloudApps[@]}"; do
-	echo "Install $idx"
-done
-
-	# Calendar)
-		# install_and_enable_app calendar
-	# ;;
-	# Contacts)
-		# install_and_enable_app contacts
-	# ;;
-	# IssueTemplate)
-		# install_and_enable_app issuetemplate
-	# ;;
-	# CanIUpdate)
-		# install_and_enable_app caniupdate
-	# ;;
-	# PDFViewer)
-		# install_and_enable_app files_pdfviewer
-	# ;;
-	# Webmin)
-		# run_app_script webmin
+for app in "${!NextcloudApps[@]}"; do
+	case "$app" in 
+		PreviewGenerator)
+			echo "Installation of $app not implemented yet!"
+		;;
+		Tasks)
+			echo "Installation of $app not implemented yet!"
+		;;
 		
+		Bitwarden)
+			echo "Installation of $app not implemented yet!"
+		;;
+		
+		Keeweb)
+			echo "Installation of $app not implemented yet!"
+		;;
+		
+		FullTextSearch)
+			echo "Installation of $app not implemented yet!"
+		;;
+		
+		webmin)
+			echo "Installation of $app not implemented yet!"
+		;;
+		
+		*)
+			install_and_enable_app "$app"
+		;;
+	esac			
+done

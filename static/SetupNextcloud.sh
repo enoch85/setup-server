@@ -17,7 +17,7 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 # Install Nextcloud
 cd "$NCPATH"
 NCDATA="${DataDisk[DataDirectory]}"
-NCUSER"${SudoUser[Username]}"
+NCUSER="${SudoUser[Username]}"
 
 occ_command maintenance:install \
 --data-dir="$NCDATA" \

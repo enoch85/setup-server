@@ -20,4 +20,3 @@ elif [ "${DBMS[MariaDB]}" -eq "1" ]; then
 	echo "MariaDB not implemented yet"
 	exit
 fi
-

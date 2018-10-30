@@ -7,5 +7,5 @@ while [ -s "${1}" ]; do
     printf "${BGreen}Execute $script now...${Color_Off}\n" >&2	
 	sleep 2
 	. "${Local_Repository}/SourceFile.sh" "$script"	
-    printf "${BGreen}Done with $script ${Color_Off}\n" >&2		
+    printf "${BGreen}Done with $script ${Color_Off}\n" >&2
 done

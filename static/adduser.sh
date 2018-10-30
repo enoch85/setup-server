@@ -31,10 +31,10 @@ You will be prompted to choose a password"
 	done
 	if [ "$MAIN_SETUP" -eq "1" ]; then
 		# Save config to file because it has changed (The workflow file is already up-to-date)
-		. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh config.cfg"
+		. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh" "config.cfg"
 		
 		echo "We will now execute the main script again, but we will skip the questions."
 		# Execute script with the new user (use exec to not continue the script after this line)
-		exec sudo -u "${SudoUser[Username]}"  "sudo bash ${Local_Repository}/main.sh"
+		exec sudo -u ${SudoUser[Username]} sudo bash ${Local_Repository}/main.sh
 	fi
 fi
