@@ -21,3 +21,13 @@ case "$WEBSERVER" in
 		
 	;;
 esac
+
+
+# If you cannot understand this, read Bash_Shell_Scripting#if_statements again.
+if (whiptail --title "Protocol" --yesno "Use HTTP2 Protocol instead of HTTP1?" 8 78); then
+    # echo "User selected Yes, exit status was $?."
+	Apache[EnableHTTP2]=1
+else
+    # echo "User selected No, exit status was $?."
+	Apache[EnableHTTP2]=0
+fi

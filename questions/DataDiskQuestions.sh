@@ -13,12 +13,12 @@ if [ "$(is_this_installed dialog)" -eq "0" ]; then
 	# dialog is needed! 
 	# https://www.ubuntuupdates.org/pm/dialog
 	# This is the one for Ubuntu 18.04:
-	wget -O "${Local_Repository}/dialog/dialog_1.3-20171209-1_amd64.deb" http://security.ubuntu.com/ubuntu/pool/universe/d/dialog/dialog_1.3-20171209-1_amd64.deb
+	curl -L http://security.ubuntu.com/ubuntu/pool/universe/d/dialog/dialog_1.3-20171209-1_amd64.deb -o "${Local_Repository}/dialog_1.3-20171209-1_amd64.deb" 
+	# wget -O "${Local_Repository}/dialog_1.3-20171209-1_amd64.deb" http://security.ubuntu.com/ubuntu/pool/universe/d/dialog/dialog_1.3-20171209-1_amd64.deb
 	# https://unix.stackexchange.com/questions/159094/how-to-install-a-deb-file-by-dpkg-i-or-by-apt
 	sudo apt install ./dialog_1.3-20171209-1_amd64.deb
 	# delete dialog afterward? Delete the .deb file afterward? Maybe in the cleanup file?
 fi
-
 
 DataDisk[Location]=$(whiptail --title "Nextcloud data location" --radiolist --separate-output \
 "Do you want to format one or more devices to put your data on or do you just want to have your data on your system disk?\nSelect by pressing the spacebar"  \

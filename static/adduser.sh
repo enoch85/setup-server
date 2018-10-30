@@ -30,8 +30,6 @@ You will be prompted to choose a password"
 		sudo passwd "${SudoUser[Username]}" && break
 	done
 	if [ "$MAIN_SETUP" -eq "1" ]; then
-		# Set flag for main.sh
-		DoNotEdit[MainAlreadyRunning]=1
 		# Save config to file because it has changed (The workflow file is already up-to-date)
 		. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/UpdateConfigFile.sh config.cfg"
 		

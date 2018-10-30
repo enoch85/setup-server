@@ -82,14 +82,14 @@ function restart_webserver() {
 	fi
 }
 
-is_root() {
-    if [[ "$EUID" -ne 0 ]]
-    then
-        return 1
-    else
-        return 0
-    fi
-}
+# is_root() {
+    # if [[ "$EUID" -ne 0 ]]
+    # then
+        # return 1
+    # else
+        # return 0
+    # fi
+# }
 
 # Test RAM size 
 # Call it like this: ram_check [amount of min RAM in GB] [for which program]
@@ -130,50 +130,60 @@ fi
 
 # Example: occ_command 'maintenance:mode --on'
 function occ_command() {
-check_command sudo -u www-data php "$NCPATH"/occ "$@";
+	check_command sudo -u www-data php "$NCPATH"/occ "$@";
 }
 
 # Check if process is runnnig: is_process_running dpkg
 function is_process_running() {
-PROCESS="$1"
+	PROCESS="$1"
 
-while :
-do
-    RESULT=$(pgrep "${PROCESS}")
+	while :
+	do
+		RESULT=$(pgrep "${PROCESS}")
 
-    if [ "${RESULT:-null}" = null ]; then
-            break
-    else
-            echo "${PROCESS} is running. Waiting for it to stop..."
-            sleep 10
-    fi
-done
+		if [ "${RESULT:-null}" = null ]; then
+				break
+		else
+				echo "${PROCESS} is running. Waiting for it to stop..."
+				sleep 10
+		fi
+	done
 }
 
 function check_distro_version() {
-# Check Ubuntu version
-echo "Checking server OS and version..."
-if uname -a | grep -ic "bionic" &> /dev/null
-then
-    OS=1
-elif uname -v | grep -ic "Ubuntu" &> /dev/null
-then 
-    OS=1
-fi
+	# Check Ubuntu version
+	echo "Checking server OS and version..."
+	if [ "$DISTRIBUTORID" = "Ubuntu" ] && [ "$CODENAME" = "bionic" ]; then
+		OS=1
+	fi
 
-if [ "$OS" != 1 ]
-then
-msg_box "Ubuntu Server is required to run this script.
-Please install that distro and try again.
+	if [ "$OS" != 1 ]; then
+	echo "Ubuntu Server 'bionic' is required to run this script.
+	Please install that distro and try again.
 
-You can find the download link here: https://www.ubuntu.com/download/server"
-    exit 1
-fi
+	You can find the download link here: https://www.ubuntu.com/download/server"
+		exit 1
+	fi
 
-if ! version 18.04 "$DISTRO" 18.04.4; then
-msg_box "Ubuntu version $DISTRO must be between 18.04 - 18.04.4"
-    exit 1
-fi
+	if ! version 18.04 "$RELEASE" 18.04.4; then
+	echo "Ubuntu version $RELEASE must be between 18.04 - 18.04.4"
+		exit 1
+	else
+		echo "Your Ubuntu version is good. We will now proceed!"
+	fi
+}
+
+
+function version(){
+    local h t v
+
+    [[ $2 = "$1" || $2 = "$3" ]] && return 0
+
+    v=$(printf '%s\n' "$@" | sort -V)
+    h=$(head -n1 <<<"$v")
+    t=$(tail -n1 <<<"$v")
+
+    [[ $2 != "$h" && $2 != "$t" ]]
 }
 
 # Check universe reposiroty
@@ -232,5 +242,47 @@ If you think this is a bug, please report it to $ISSUES"
 exit 1
 else
     echo "pm.max_children was set to $PHP_FPM_MAX_CHILDREN"
+fi
+}
+
+function download_verify_nextcloud_stable() {
+rm -f "$HTML/$STABLEVERSION.tar.bz2"
+wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
+mkdir -p "$GPGDIR"
+wget -q "$NCREPO/$STABLEVERSION.tar.bz2.asc" -P "$GPGDIR"
+chmod -R 600 "$GPGDIR"
+gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_fingerprint"
+gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
+rm -r "$GPGDIR"
+rm -f releases
+}
+
+function configure_max_upload() {
+# Increase max filesize (expects that changes are made in $PHP_INI)
+# Here is a guide: https://www.techandme.se/increase-max-file-size/
+echo "Setting max_upload size in PHP..."
+# Copy settings from .htaccess to user.ini. beacuse we run php-fpm. Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
+cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
+# Do the acutal change
+sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
+sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
+sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
+}
+
+
+
+function install_and_enable_app() {
+# Download and install $1
+if [ ! -d "$NC_APPS_PATH/$1" ]
+then
+    echo "Installing $1..."
+    occ_command app:install "$1"
+fi
+
+# Enable $1
+if [ -d "$NC_APPS_PATH/$1" ]
+then
+    occ_command app:enable "$1"
+    chown -R www-data:www-data "$NC_APPS_PATH"
 fi
 }

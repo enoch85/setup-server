@@ -1,4 +1,5 @@
 
+NCUSER="${SudoUser[Username]}"
 
 if [ "${DBMS[PostgreSQL]}" -eq "1" ]; then
 	# Install PostgreSQL
@@ -8,7 +9,7 @@ if [ "${DBMS[PostgreSQL]}" -eq "1" ]; then
 	apt install postgresql-10 -y
 
 	# Create DB
-	cd /tmp
+	# cd /tmp
 sudo -u postgres psql <<END
 CREATE USER $NCUSER WITH PASSWORD '$PGDB_PASS';
 CREATE DATABASE nextcloud_db WITH OWNER $NCUSER TEMPLATE template0 ENCODING 'UTF8';

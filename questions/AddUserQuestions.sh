@@ -30,8 +30,8 @@ if [ "$askquestion" -eq "1" ]; then
 ADDSUDOUSER=$(whiptail --title "Add sudo user" --radiolist --separate-output \
 "Choose if you want to create a new user within sudo user group.\nSelect by pressing the spacebar"  \
 "$WT_HEIGHT" "$WT_WIDTH" 3 \
-"Yes" "" "ON" \
-"No"  "" "OFF" \
+"Yes" "" "${SudoUser[Adduser]}" \
+"No"  "" $([ ${SudoUser[Adduser]} == 0 ] && echo 1 || echo 0) \
 3>&1 1>&2 2>&3)
 
 exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
