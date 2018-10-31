@@ -44,7 +44,7 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	workflow+=("${DIR_STATIC}/ChangePasswords.sh")		# Can this be done at the very end of the script?
 	workflow+=("${DIR_STATIC}/SetupExtraSoftware2.sh")	# Can this be done in SetupExtraSoftware.sh?
 	# workflow+=("${DIR_STATIC}/XXXXX.sh")
-	# workflow+=("cleanup.sh")
+	workflow+=("cleanup.sh")
 	
 
 	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/SetupQuestions.sh"

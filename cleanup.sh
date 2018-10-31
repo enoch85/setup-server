@@ -13,9 +13,10 @@ occ_command maintenance:repair
 
 rm "${Local_Repository}/config.cfg"
 rm "${Local_Repository}/workflow.txt"
+rm "${Local_Repository}/dialog_1.3-20171209-1_amd64.deb"
 sudo rm "/etc/sudoers.d/custom"
 sudo rm "/etc/systemd/system/getty@tty1.service.d/override.conf"
-sudo rm "/home/georg/.bash_profile"
+sudo rm "/home/${UNIXUSER}/.bash_profile"
 
 truncate -s 0 \
     /root/.bash_history \

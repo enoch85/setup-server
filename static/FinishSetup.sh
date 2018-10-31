@@ -28,6 +28,8 @@ linux-image-extra-virtual
 # Force MOTD to show correct number of updates
 sudo /usr/lib/update-notifier/update-motd-updates-available --force
 
+# any_key "First setup block finished, press any key to reboot system and continue afterward..."
+
 # Reboot
 echo "Installation done, system will now reboot..."
 reboot

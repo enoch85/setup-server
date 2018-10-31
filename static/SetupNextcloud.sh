@@ -55,4 +55,4 @@ configure_max_upload
 occ_command config:system:set mail_smtpmode --value="smtp"
 
 # Set logrotate
-occ_command config:system:set log_rotate_size --value="10485760"
+occ_command config:system:set log_rotate_size --value="1048576"

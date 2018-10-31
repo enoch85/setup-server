@@ -55,6 +55,8 @@ restart_webserver
     # bash "$SCRIPTS"/trusted.sh # Can be done with an occ command???
     # rm -f "$SCRIPTS"/trusted.sh
 # fi
+# occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+occ_command config:system:set trusted_domains 3 --value="192.168.2.110"
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf

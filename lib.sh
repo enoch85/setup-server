@@ -246,6 +246,8 @@ fi
 }
 
 function download_verify_nextcloud_stable() {
+##### ????????????????? it's working but there is some warning message:unsafe ownership on homedir '/home/georg/.gnupg'
+# sudo chown -R root:root /home/georg/.gnupg 
 rm -f "$HTML/$STABLEVERSION.tar.bz2"
 wget -q -T 10 -t 2 "$NCREPO/$STABLEVERSION.tar.bz2" -P "$HTML"
 mkdir -p "$GPGDIR"
@@ -255,6 +257,7 @@ gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$OpenPGP_finge
 gpg --verify "$GPGDIR/$STABLEVERSION.tar.bz2.asc" "$HTML/$STABLEVERSION.tar.bz2"
 rm -r "$GPGDIR"
 rm -f releases
+# sudo chown -R georg:georg /home/georg/.gnupg 
 }
 
 function configure_max_upload() {

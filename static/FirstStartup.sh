@@ -62,10 +62,10 @@ is_process_running dpkg
 # download_le_script activate-ssl
 
 if [ ! -f "${Local_Repository}/${DIR_STATIC}/index.php" ] || [ "${UseLocalFiles}" -eq 0 ]; then
-	wget -O "${Local_Repository}/index.php" "${Github_Repository}/${Github_Branch}/${DIR_STATIC}/index.php"
+	wget -O "${Local_Repository}/${DIR_STATIC}/index.php" "${Github_Repository}/${Github_Branch}/${DIR_STATIC}/index.php"
 fi
 
-mv "${Local_Repository}/index.php" "$HTML/index.php" && rm -f $HTML/html/index.html
+mv "${Local_Repository}/${DIR_STATIC}/index.php" "$HTML/index.php" && rm -f $HTML/html/index.html
 chmod 750 $HTML/index.php && chown www-data:www-data $HTML/index.php
 
 # Change 000-default to $WEB_ROOT

@@ -30,8 +30,7 @@ NCUSER="${SudoUser[Username]}"
 
 sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 
-if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]
-then
+if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]; then
     echo -e "${Green}Your new PosgreSQL Nextcloud password is: $NEWPGPASS${Color_Off}"
 else
     echo "Changing PostgreSQL Nextcloud password failed."
