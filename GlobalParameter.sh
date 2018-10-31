@@ -48,6 +48,8 @@ PGDB_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$SHUF" | head -n 1)
 
 # Apache2
 HTTP2_CONF="/etc/apache2/mods-available/http2.conf"
+SSL_CONF="/etc/apache2/sites-available/nextcloud_ssl_domain_self_signed.conf"
+HTTP_CONF="/etc/apache2/sites-available/nextcloud_http_domain_self_signed.conf"
 
 # Nextcloud
 [ ! -z "$NC_UPDATE" ] && CURRENTVERSION=$(sudo -u www-data php $NCPATH/occ status | grep "versionstring" | awk '{print $3}')
@@ -60,14 +62,15 @@ NCPASS=nextcloud
 # Keys
 OpenPGP_fingerprint='28806A878AE423A28372792ED75899B9A724937A'
 
+
 # # Adminer
 # ADMINERDIR=/usr/share/adminer
 # ADMINER_CONF=/etc/apache2/conf-available/adminer.conf
-# # Redis
-# REDIS_CONF=/etc/redis/redis.conf
-# REDIS_SOCK=/var/run/redis/redis-server.sock
-# RSHUF=$(shuf -i 30-35 -n 1)
-# REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
+# Redis
+REDIS_CONF=/etc/redis/redis.conf
+REDIS_SOCK=/var/run/redis/redis-server.sock
+RSHUF=$(shuf -i 30-35 -n 1)
+REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
 
 ## bash colors
 # Reset

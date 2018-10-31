@@ -56,18 +56,3 @@ occ_command config:system:set mail_smtpmode --value="smtp"
 
 # Set logrotate
 occ_command config:system:set log_rotate_size --value="10485760"
-
-
-
-
-
-
-
-
-
-
-
-
-# Needed? What do we need it for?
-# Install Figlet
-install_if_not figlet

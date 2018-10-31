@@ -19,10 +19,6 @@ for app in "${!NextcloudApps[@]}"; do
 			echo "Installation of $app not implemented yet!"
 		;;
 		
-		webmin)
-			echo "Installation of $app not implemented yet!"
-		;;
-		
 		*)
 			install_and_enable_app "$app"
 		;;

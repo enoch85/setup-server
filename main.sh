@@ -28,13 +28,19 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	workflow+=("${DIR_STATIC}/SetupPHP.sh")
 	workflow+=("${DIR_STATIC}/SetupNextcloud.sh")
 	workflow+=("${DIR_STATIC}/SetupOPCache.sh")
+	workflow+=("${DIR_STATIC}/SetupFiglet.sh")
 	workflow+=("${DIR_STATIC}/GenerateVirtualHosts.sh")
 	workflow+=("${DIR_STATIC}/NextcloudApps.sh")
-	# workflow+=("${DIR_STATIC}/SetupNextcloud.sh")
-	# workflow+=("${DIR_STATIC}/SetupNextcloud.sh")
-	# workflow[3]="Figlet"
-	# workflow[4]="SetupSSL"
-	# workflow[5]="SetupRedis"
+	workflow+=("${DIR_STATIC}/SetupWebmin.sh")
+	# workflow+=("${DIR_STATIC}/ChangeSudoUserProfile.sh")
+	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
+	workflow+=("${DIR_STATIC}/ChangeUnixUserProfile.sh")
+	workflow+=("${DIR_STATIC}/SetupRedis.sh")
+	workflow+=("${DIR_STATIC}/FinishSetup.sh")
+	# Cleanup bash history?
+	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
+	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
+	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
 	# workflow[6]="Fail2ban"
 	# workflow[7]="Adminer"
 	# workflow[8]="Netdata"
@@ -44,7 +50,6 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	# workflow[12]="ModSecurity"
 	# workflow[13]="StaticIP"
 	# workflow[14]="SecureSSH"
-	# ...
 
 	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/SetupQuestions.sh"
 
@@ -100,6 +105,8 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 		. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/DatabaseQuestions.sh"
 
 		. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/NextcloudAppsQuestions.sh"
+		
+		. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/WebminQuestions.sh"		
 
 		. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/OfficeQuestions.sh"
 

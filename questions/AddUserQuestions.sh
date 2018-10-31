@@ -26,6 +26,9 @@ elif [ "$MAIN_SETUP" = 1 ] && [ "${SetupServerMethod[AdvancedSetup]}" -eq "1" ];
 	askquestion=1
 fi
 
+# Set current user as SudoUser in config file
+SudoUser[Username]=$SUDO_USER
+
 if [ "$askquestion" -eq "1" ]; then
 ADDSUDOUSER=$(whiptail --title "Add sudo user" --radiolist --separate-output \
 "Choose if you want to create a new user within sudo user group.\nSelect by pressing the spacebar"  \
