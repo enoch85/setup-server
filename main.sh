@@ -39,6 +39,7 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	# Contintue after reboot:
 	workflow+=("${DIR_STATIC}/FirstStartup.sh")
 	workflow+=("${DIR_STATIC}/ChangeDBPass.sh")			# Can this be done at the very end of the script? And can this be done in the ChangePasswords.sh?
+	# workflow+=("${DIR_STATIC}/SSL.sh")
 	workflow+=("${DIR_STATIC}/SetupExtraSoftware.sh")
 	workflow+=("${DIR_STATIC}/ChangePasswords.sh")		# Can this be done at the very end of the script?
 	workflow+=("${DIR_STATIC}/SetupExtraSoftware2.sh")	# Can this be done in SetupExtraSoftware.sh?

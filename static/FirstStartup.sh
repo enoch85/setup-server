@@ -93,6 +93,8 @@ occ_command maintenance:update:htaccess
 . "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/setup_secure_permissions_nextcloud.sh"
 
 # Generate new SSH Keys # Why do we need it?
-printf "\nGenerating new SSH keys for the server...\n"
-rm -v /etc/ssh/ssh_host_*
-dpkg-reconfigure openssh-server
+# https://www.cyberciti.biz/faq/howto-regenerate-openssh-host-keys/
+# I don't need it
+# printf "\nGenerating new SSH keys for the server...\n"
+# rm -v /etc/ssh/ssh_host_*
+# dpkg-reconfigure openssh-server

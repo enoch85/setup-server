@@ -20,6 +20,14 @@ fi
 
 # Change PostgreSQL Password
 # cd /tmp
+
+
+########################
+# Ask the user for a new password instead of using a random password?
+########################
+
+NCUSER="${SudoUser[Username]}"
+
 sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
 
 if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]

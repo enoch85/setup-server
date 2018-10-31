@@ -6,41 +6,43 @@ restart_webserver
 # Here is a guide: https://www.techandme.se/increase-max-file-size/
 configure_max_upload
 
-# Extra configurations
-whiptail --title "Extra configurations" --checklist --separate-output "Choose what you want to configure\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-"Security" "(Add extra security based on this http://goo.gl/gEJHi7)" OFF \
-"SecureSSH" "TBD" OFF \
-"ModSecurity" "(Add ModSecurity for Apache2" OFF \
-"Static IP" "(Set static IP in Ubuntu with netplan.io)" OFF 2>results
 
-while read -r -u 9 choice
-do
-    case $choice in
-        "Security")
-            clear
-            run_static_script security
-        ;;
+#!/bin/bash
+if [ -z "$MAIN_SETUP" ]
+then
+	Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
+	Github_Branch="master"
+	UseLocalFiles=1	# This variable is for developement purposes, so that we don't have to push changes in a file to github befor testing it.
+	Local_Repository="/home/georg/github/ggeorgg/setup-server"
+	if [ ! -f "${Local_Repository}/SourceFile.sh" ] || [ "${UseLocalFiles}" -eq 0 ]; then
+	wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
+	fi
+	# Include functions (download the config file and read it to arrays)
+	. "${Local_Repository}/SourceFile.sh" "lib.sh"
+
+	MAIN_SETUP=0
 		
-        "SecureSSH")
-            clear
-			echo "TBD"
-        ;;		
-        
-        "ModSecurity")
-            clear
-            run_static_script modsecurity
-        ;;
+	## Questions
+	# . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
+	
+fi
 
-        "Static IP")
-            clear
-            run_static_script set_static_ip
-        ;;
+if [ "${Miscelangelous[SETUP_STATIC_Security]}" -eq "1" ]; then
+	echo "SETUP_STATIC_Security TBD"
+	# run_static_script security
+fi
 
-        *)
-        ;;
-    esac
-done 9< results
-rm -f results
+if [ "${Miscelangelous[SETUP_STATIC_ModSecurity]}" -eq "1" ]; then
+	echo "SETUP_STATIC_ModSecurity TBD"
+	# run_static_script modsecurity
+fi
+
+if [ "${Miscelangelous[SETUP_STATIC_IP]}" -eq "1" ]; then
+	echo "SETUP_STATIC_IP TBD"
+	# run_static_script set_static_ip
+fi
+
+
 
 # Calculate max_children after all apps are installed
 calculate_max_children
