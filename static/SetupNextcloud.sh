@@ -15,7 +15,7 @@ rm "$HTML/$STABLEVERSION.tar.bz2"
 . "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/setup_secure_permissions_nextcloud.sh"
 
 # Install Nextcloud
-cd "$NCPATH"
+# cd "$NCPATH"	# This line breaks the continuation of my process_queue.sh file...
 NCDATA="${DataDisk[DataDirectory]}"
 NCUSER="${SudoUser[Username]}"
 

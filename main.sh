@@ -32,24 +32,19 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	workflow+=("${DIR_STATIC}/GenerateVirtualHosts.sh")
 	workflow+=("${DIR_STATIC}/NextcloudApps.sh")
 	workflow+=("${DIR_STATIC}/SetupWebmin.sh")
-	# workflow+=("${DIR_STATIC}/ChangeSudoUserProfile.sh")
-	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
 	workflow+=("${DIR_STATIC}/ChangeUnixUserProfile.sh")
 	workflow+=("${DIR_STATIC}/SetupRedis.sh")
 	workflow+=("${DIR_STATIC}/FinishSetup.sh")
 	# Cleanup bash history?
-	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
-	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
-	# workflow+=("${DIR_STATIC}/ChangeRootProfile.sh")
-	# workflow[6]="Fail2ban"
-	# workflow[7]="Adminer"
-	# workflow[8]="Netdata"
-	# workflow[9]="OnlyOffice"
-	# workflow[10]="Collabora"
-	# workflow[11]="Security"
-	# workflow[12]="ModSecurity"
-	# workflow[13]="StaticIP"
-	# workflow[14]="SecureSSH"
+	# Contintue after reboot:
+	workflow+=("${DIR_STATIC}/FirstStartup.sh")
+	workflow+=("${DIR_STATIC}/ChangeDBPass.sh")			# Can this be done at the very end of the script? And can this be done in the ChangePasswords.sh?
+	workflow+=("${DIR_STATIC}/SetupExtraSoftware.sh")
+	workflow+=("${DIR_STATIC}/ChangePasswords.sh")		# Can this be done at the very end of the script?
+	workflow+=("${DIR_STATIC}/SetupExtraSoftware2.sh")	# Can this be done in SetupExtraSoftware.sh?
+	# workflow+=("${DIR_STATIC}/XXXXX.sh")
+	# workflow+=("cleanup.sh")
+	
 
 	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/SetupQuestions.sh"
 
@@ -177,10 +172,11 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	check_universe
 
 	# Check if key is available
-	if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null; then
-		msg_box "Nextcloud repo ($NCREPO) is not available, exiting..."
+	if ! curl -sL -w "%{http_code}\n" "$NCREPO" -o /dev/null; then	# How to avoid output of http_code to console?
+	# if ! wget -q -T 10 -t 2 "$NCREPO" > /dev/null; then
+		echo "Nextcloud repo ($NCREPO) is not available, exiting..."
 		exit 1
-	fi	
+	fi
 
 	# Check if it's a clean server
 	# is_this_installed postgresql
@@ -204,5 +200,9 @@ fi
 # Process the scripts / Continue processing the scripts (if e.g. the adduser.sh has rerun the main.sh script)
 . "${Local_Repository}/SourceFile.sh" "process_queue.sh" "workflow.txt"
 
-## Clear downloads
+## Cleanup
 # . "${Local_Repository}/SourceFile.sh" "cleanup.sh"
+
+any_key "Installation finished, press any key to reboot system..."
+
+reboot
