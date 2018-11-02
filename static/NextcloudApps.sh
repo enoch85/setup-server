@@ -14,30 +14,50 @@ then
 	MAIN_SETUP=0
 		
 	## Questions
-	# . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
+	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/NextcloudAppsQuestions.sh"
 	
 fi
 
 for app in "${!NextcloudApps[@]}"; do
 	case "$app" in 
 		PreviewGenerator)
-			echo "Installation of $app not implemented yet!"
+			if "${NextcloudApps[$app]}"; then
+				. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/previewgenerator.sh"
+			fi
 		;;
 
 		Bitwarden)
-			echo "Installation of $app not implemented yet!"
+			if "${NextcloudApps[$app]}"; then
+				echo "Installation of $app not implemented yet!"
+			fi
 		;;
 		
 		Keeweb)
-			echo "Installation of $app not implemented yet!"
+			if "${NextcloudApps[$app]}"; then
+				echo "Installation of $app not implemented yet!"
+			fi
 		;;
 		
 		FullTextSearch)
-			echo "Installation of $app not implemented yet!"
+			if "${NextcloudApps[$app]}"; then		
+				. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/fulltextsearch.sh"
+			fi
+		;;
+		
+		Office)
+			if "${NextcloudApps[$app]}"; then
+				if [ "${Office[OnlyOffice]}" -eq "1" ]; then
+					. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/SetupOnlyOffice.sh"
+				elif [ "${Office[Collabora]}" -eq "1" ]; then
+					echo "Not implemented yet!"
+				fi
+			fi
 		;;
 		
 		*)
-			install_and_enable_app "$app"
+			if "${NextcloudApps[$app]}"; then
+				install_and_enable_app "$app"
+			fi
 		;;
 	esac			
 done

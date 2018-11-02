@@ -1,5 +1,7 @@
 WT_HEIGHT=$(stty size | awk '{print $1;}')
 WT_WIDTH=$(stty size | awk '{print $2;}')
+ADDRESS=$(hostname -I | cut -d ' ' -f 1)	# needs to be set in GlobalParameters?
+
 
 CONFIG_FILE_PATH="config.cfg"
 DIR_STATIC="static"
@@ -16,7 +18,7 @@ HTML=/var/www
 # SNAPDIR=/var/snap/spreedme
 GPGDIR=/tmp/gpg
 # BACKUP=/mnt/NCBACKUP
-# RORDIR=/opt/es/
+RORDIR=/opt/es/
 
 
 # Repo
@@ -72,6 +74,13 @@ REDIS_CONF=/etc/redis/redis.conf
 REDIS_SOCK=/var/run/redis/redis-server.sock
 RSHUF=$(shuf -i 30-35 -n 1)
 REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 1)
+
+# Full text Search
+[ ! -z "$ES_INSTALL" ] && INDEX_USER=$(tr -dc '[:lower:]' < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$ES_INSTALL" ] && ROREST=$(tr -dc "A-Za-z0-9" < /dev/urandom | fold -w "$SHUF" | head -n 1)
+[ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
+[ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
+[ ! -z "$ES_INSTALL" ] && fts_es_name="fts_esror"
 
 ## bash colors
 # Reset

@@ -261,15 +261,15 @@ rm -f releases
 }
 
 function configure_max_upload() {
-# Increase max filesize (expects that changes are made in $PHP_INI)
-# Here is a guide: https://www.techandme.se/increase-max-file-size/
-echo "Setting max_upload size in PHP..."
-# Copy settings from .htaccess to user.ini. beacuse we run php-fpm. Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
-cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
-# Do the acutal change
-sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
-sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
-sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
+	# Increase max filesize (expects that changes are made in $PHP_INI)
+	# Here is a guide: https://www.techandme.se/increase-max-file-size/
+	echo "Setting max_upload size in PHP..."
+	# Copy settings from .htaccess to user.ini. beacuse we run php-fpm. Documented here: https://docs.nextcloud.com/server/13/admin_manual/installation/source_installation.html#php-fpm-configuration-notes
+	cp -fv "$NCPATH/.htaccess" "$NCPATH/.user.ini"
+	# Do the acutal change
+	sed -i 's/  php_value upload_max_filesize.*/# php_value upload_max_filesize 511M/g' "$NCPATH"/.user.ini
+	sed -i 's/  php_value post_max_size.*/# php_value post_max_size 511M/g' "$NCPATH"/.user.ini
+	sed -i 's/  php_value memory_limit.*/# php_value memory_limit 512M/g' "$NCPATH"/.user.ini
 }
 
 
@@ -378,4 +378,28 @@ then
     install_if_not curl
     curl -fsSL get.docker.com | sh
 fi
+}
+
+function set_max_count() { # Was macht diese Funktion?
+if grep -F 'vm.max_map_count=262144' /etc/sysctl.conf ; then
+	echo "Max map count already set, skipping..."
+else
+	sysctl -w vm.max_map_count=262144
+	{
+  	echo "###################################################################"
+  	echo "# Docker ES max virtual memory"
+  	echo "vm.max_map_count=262144"
+	} >> /etc/sysctl.conf
+fi
+}
+
+# countdown 'message looks like this' 10
+function countdown() {
+echo "$1"
+secs="$(($2))"
+while [ $secs -gt 0 ]; do
+   echo -ne "$secs\033[0K\r"
+   sleep 1
+   : $((secs--))
+done
 }

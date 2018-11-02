@@ -34,6 +34,10 @@ if [ "${Webserver[Apache2]}" -eq "1" ]; then
 
 	# We don't use Apache PHP (just to be sure)
 	a2dismod mpm_prefork
+	
+	# Fixes https://github.com/nextcloud/vm/issues/58
+	a2dismod status	# Kann das auch schon an einer anderen stelle gemacht werden, sodass der Webserver nicht schon wieder neu gestartet werden muss?
+	# restart_webserver	
 
 elif [ "${Webserver[NGINX]}" -eq "1" ]; then
 	echo "NGINX not implemented yet!"

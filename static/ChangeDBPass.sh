@@ -19,8 +19,6 @@ then
 fi
 
 # Change PostgreSQL Password
-# cd /tmp
-
 
 ########################
 # Ask the user for a new password instead of using a random password?

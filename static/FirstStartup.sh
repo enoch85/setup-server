@@ -94,7 +94,7 @@ occ_command maintenance:update:htaccess
 
 # Generate new SSH Keys # Why do we need it?
 # https://www.cyberciti.biz/faq/howto-regenerate-openssh-host-keys/
-# I don't need it
+# I don't need it, just necessary for distributing a VM
 # printf "\nGenerating new SSH keys for the server...\n"
 # rm -v /etc/ssh/ssh_host_*
 # dpkg-reconfigure openssh-server

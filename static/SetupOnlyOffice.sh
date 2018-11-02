@@ -206,8 +206,6 @@ HTTPS_CREATE
 	fi
 
 elif [ "${Office[SeparateMachine]}" -eq "0" ]; then
-	#############################################################################################################
-	#############################################################################################################
 
 	# Install OnlyOffice on the same machine as nextcloud
 	# https://decatec.de/home-server/nextcloud-online-office-mit-onlyoffice/
@@ -215,16 +213,6 @@ elif [ "${Office[SeparateMachine]}" -eq "0" ]; then
 	OfficeCertsDir=/app/onlyoffice/DocumentServer/data/certs
 	
 	sudo mkdir -p "${OfficeCertsDir}"
-	# cd /app/onlyoffice/DocumentServer/data/certs
-	# openssl genrsa -out onlyoffice.key 4096 			# Generates onlyoffice.key
-
-	# # Beim Befehl openssl req -new -key onlyoffice.key -out onlyoffice.csr wird man nach dem „Common Name“ 
-	# # gefragt (Common Name (e.g. server FQDN or YOUR name)). Hier ist einfach die IP des lokalen Systems 
-	# # anzugebnen (z.B. 192.168.178.32). Ebenso kann man ein „challenge password“ angeben. Dieses kann man 
-	# # einfach leer lassen (einfach mit Enter bestätigen).
-	# #### Not working?
-	
-	# ADDRESS=$(hostname -I | cut -d ' ' -f 1)	# needs to be set in GlobalParameters?
 
 	# # Are these variable important? (except of \CN, which I know is needed)
 	# # /C=NL: 2 letter ISO country code (Netherlands)
@@ -240,14 +228,7 @@ elif [ "${Office[SeparateMachine]}" -eq "0" ]; then
 	# OrganizationUnit=""
 	# CommonName="${ADDRESS}"
 	# openssl req -new -key onlyoffice.key -out onlyoffice.csr -subj "/C=${CountryCode}/ST=${State}/L=${Location}/O=${Organization}/OU=${OrganizationUnit}/CN=${ADDRESS}"
-
-	# openssl x509 -req -days 3650 -in onlyoffice.csr -signkey onlyoffice.key -out onlyoffice.crt
-
-	# openssl dhparam -out dhparam.pem 2048
-	# # Falls es mit 4096 zu lange dauert, kann auch 2048 verwendet werden
 	
-	ADDRESS=$(hostname -I | cut -d ' ' -f 1)	# needs to be set in GlobalParameters?
-
 	CountryCode="DE"
 	State="Bavaria"
 	Location="Lichtenfels"
@@ -256,17 +237,17 @@ elif [ "${Office[SeparateMachine]}" -eq "0" ]; then
 	CommonName="${ADDRESS}"
 	KeyBitSize=2048
 
-	openssl req -nodes -newkey "rsa:${KeyBitSize}" -keyout "${OfficeCertsDir}/onlyoffice.key" -out "${OfficeCertsDir}onlyoffice.csr" \
+	openssl req -nodes -newkey "rsa:${KeyBitSize}" -keyout "${OfficeCertsDir}/onlyoffice.key" -out "${OfficeCertsDir}/onlyoffice.csr" \
 	-subj "/C=${CountryCode}/ST=${State}/L=${Location}/O=${Organization}/OU=${OrganizationUnit}/CN=${ADDRESS}"
 
 	openssl x509 -req -days 3650 -in "${OfficeCertsDir}/onlyoffice.csr" -signkey "${OfficeCertsDir}/onlyoffice.key" -out "${OfficeCertsDir}/onlyoffice.crt"
 
 	openssl dhparam -out "${OfficeCertsDir}/dhparam.pem" "${KeyBitSize}"
 
-	chmod 400 "${OfficeCertsDir}/onlyoffice.key"
-	chmod 400 "${OfficeCertsDir}/onlyoffice.crt"
-	chmod 400 "${OfficeCertsDir}/onlyoffice.csr"
-	chmod 400 "${OfficeCertsDir}/dhparam.pem"
+	sudo chmod 400 "${OfficeCertsDir}/onlyoffice.key"
+	sudo chmod 400 "${OfficeCertsDir}/onlyoffice.crt"
+	sudo chmod 400 "${OfficeCertsDir}/onlyoffice.csr"
+	sudo chmod 400 "${OfficeCertsDir}/dhparam.pem"
 
 	# Generate password for docker connection
 	jwt_secret=head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10
@@ -274,7 +255,8 @@ elif [ "${Office[SeparateMachine]}" -eq "0" ]; then
 	# Install Docker
 	install_docker
 
-	docker run --name=onlyoffice -i -t -d -p 4433:443 -e JWT_ENABLED='true' -e JWT_SECRET="$jwt_secret" --restart=always -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data onlyoffice/documentserver
+	# docker run --name=onlyoffice -i -t -d -p 4433:443 -e JWT_ENABLED='true' -e JWT_SECRET="$jwt_secret" --restart=always -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data onlyoffice/documentserver
+	docker run --name=onlyoffice -i -t -d -p 4433:443 -e JWT_ENABLED='true' -e JWT_SECRET=secret --restart=always -v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data onlyoffice/documentserver
 
 	occ_command config:system:set onlyoffice verify_peer_off --value=true
 
@@ -285,17 +267,18 @@ elif [ "${Office[SeparateMachine]}" -eq "0" ]; then
 	check_command git clone https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git "$NC_APPS_PATH"/onlyoffice
 
 	# Enable Onlyoffice
-	if [ -d "$NC_APPS_PATH"/onlyoffice ]
-	then
-	# Enable OnlyOffice
-	occ_command app:enable onlyoffice
-	occ_command config:app:set onlyoffice DocumentServerUrl --value="https://${ADDRESS}:4433"
-	occ_command config:app:set onlyoffice jwt_secret --value="$jwt_secret"
-	occ_command config:app:set onlyoffice sameTab --value=true
-	chown -R www-data:www-data "$NC_APPS_PATH"
-
-	fi
+	# if [ -d "$NC_APPS_PATH"/onlyoffice ]; then
+		# Enable OnlyOffice
+		occ_command app:enable onlyoffice
+		occ_command config:app:set onlyoffice DocumentServerUrl --value="https://${ADDRESS}:4433"
+		# occ_command config:app:set onlyoffice jwt_secret --value="$jwt_secret"
+		occ_command config:app:set onlyoffice jwt_secret --value=secret
+		occ_command config:app:set onlyoffice sameTab --value=true
+		chown -R www-data:www-data "$NC_APPS_PATH"
+	# fi
 fi
+
+echo $ADDRESS
 
 # Add prune command
     # {

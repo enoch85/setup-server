@@ -14,14 +14,12 @@ then
 	MAIN_SETUP=0
 		
 	## Questions
-	# . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/AddUserQuestions.sh"
+	# . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/ExtraSoftwareQuestions.sh"
 	
 fi
 
-
-
 if [ "${Miscelangelous[SETUP_Webmin]}" -eq "1" ]; then
-	echo "SETUP_Webmin TBD"
+	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/SetupWebmin.sh"
 fi
 
 if [ "${Miscelangelous[SETUP_Netdata]}" -eq "1" ]; then
@@ -40,81 +38,36 @@ if [ "${SecureSSH[SETUP_SECURE_SSH]}" -eq "1" ]; then
 	echo "SETUP_SECURE_SSH TBD"
 fi
 
-if [ "${Office[OnlyOffice]}" -eq "1" ]; then
-	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/SetupOnlyOffice.sh"
+if [ "${Miscelangelous[SETUP_Security]}" -eq "1" ]; then
+	echo "SETUP_STATIC_Security TBD"
+	# run_static_script security
+fi
+
+if [ "${Miscelangelous[SETUP_ModSecurity]}" -eq "1" ]; then
+	echo "SETUP_STATIC_ModSecurity TBD"
+	# run_static_script modsecurity
+fi
+
+if [ "${Miscelangelous[SETUP_STATIC_IP]}" -eq "1" ]; then
+	echo "SETUP_STATIC_IP TBD"
+	# run_static_script set_static_ip
 fi
 
 
 
-# # Install Apps
-# whiptail --title "Which apps do you want to install?" --checklist --separate-output "Automatically configure and install selected apps\nSelect by pressing the spacebar" "$WT_HEIGHT" "$WT_WIDTH" 4 \
-# "Fail2ban" "(Extra Bruteforce protection)   " OFF \
-# "Adminer" "(PostgreSQL GUI)       " OFF \
-# "Netdata" "(Real-time server monitoring)       " OFF \
-# "Collabora" "(Online editing [2GB RAM])   " OFF \
-# "OnlyOffice" "(Online editing [4GB RAM])   " OFF \
-# "Bitwarden" "(Password manager) - NOT STABLE   " OFF \
-# "FullTextSearch" "(Elasticsearch for Nextcloud [2GB RAM])   " OFF \
-# "PreviewGenerator" "(Pre-generate previews)   " OFF \
-# "Talk" "(Nextcloud Video calls and chat)   " OFF \
-# "Spreed.ME" "(3rd-party Video calls and chat)   " OFF 2>results
+# Calculate max_children after all apps are installed
+calculate_max_children
+check_command sed -i "s|pm.max_children.*|pm.max_children = $PHP_FPM_MAX_CHILDREN|g" $PHP_POOL_DIR/nextcloud.conf
+restart_webserver
 
-# while read -r -u 9 choice
-# do
-    # case $choice in
-        # Fail2ban)
-            # clear
-            # run_app_script fail2ban
-        # ;;
-        
-        # Adminer)
-            # clear
-            # run_app_script adminer
-        # ;;
-        
-        # Netdata)
-            # clear
-            # run_app_script netdata
-        # ;;
-        
-        # OnlyOffice)
-            # clear
-            # run_app_script onlyoffice
-        # ;;
-        
-        # Collabora)
-            # clear
-            # run_app_script collabora
-        # ;;
+# # Set trusted domain in config.php
+# if [ -f "$SCRIPTS"/trusted.sh ] 
+# then
+    # bash "$SCRIPTS"/trusted.sh # Can be done with an occ command???
+    # rm -f "$SCRIPTS"/trusted.sh
+# fi
+# occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
+occ_command config:system:set trusted_domains 3 --value="$ADDRESS"
 
-        # Bitwarden)
-            # clear
-            # run_app_script tmbitwarden
-        # ;;
-        
-        # FullTextSearch)
-            # clear
-           # run_app_script fulltextsearch
-        # ;;             
-        
-        # PreviewGenerator)
-            # clear
-           # run_app_script previewgenerator
-        # ;;   
-
-        # Talk)
-            # clear
-            # run_app_script talk
-        # ;;
-        
-        # Spreed.ME)
-            # clear
-            # run_app_script spreedme
-        # ;;
-
-        # *)
-        # ;;
-    # esac
-# done 9< results
-# rm -f results
-# clear
+# Prefer IPv6
+sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf
