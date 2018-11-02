@@ -11,9 +11,9 @@ occ_command maintenance:repair
 # find /root "/home/$UNIXUSER" -type f \( -name '*.sh*' -o -name '*.html*' -o -name '*.tar*' -o -name '*.zip*' \) -delete
 # sed -i "s|instruction.sh|nextcloud.sh|g" "/home/$UNIXUSER/.bash_profile"
 
-rm "${Local_Repository}/config.cfg"
-rm "${Local_Repository}/workflow.txt"
-rm "${Local_Repository}/dialog_1.3-20171209-1_amd64.deb"
+# rm "${Local_Repository}/config.cfg"
+# rm "${Local_Repository}/workflow.txt"
+# rm "${Local_Repository}/dialog_1.3-20171209-1_amd64.deb"
 sudo rm "/etc/sudoers.d/custom"
 sudo rm "/etc/systemd/system/getty@tty1.service.d/override.conf"
 sudo rm "/home/${UNIXUSER}/.bash_profile"

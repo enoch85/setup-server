@@ -19,7 +19,7 @@ AUTOLOGIN
 
 # Execute the main.sh after login to terminal (Why do we need to change the directory???
 cat <<-UNIXUSER-PROFILE > "/home/${UNIXUSER}/.bash_profile"
-# cd ${Local_Repository}
+cd ${Local_Repository}
 sudo bash ${Local_Repository}/main.sh
 UNIXUSER-PROFILE
 

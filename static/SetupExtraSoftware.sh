@@ -40,7 +40,9 @@ if [ "${SecureSSH[SETUP_SECURE_SSH]}" -eq "1" ]; then
 	echo "SETUP_SECURE_SSH TBD"
 fi
 
-
+if [ "${Office[OnlyOffice]}" -eq "1" ]; then
+	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/SetupOnlyOffice.sh"
+fi
 
 
 

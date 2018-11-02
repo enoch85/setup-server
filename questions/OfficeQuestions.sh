@@ -27,3 +27,27 @@ if [ "$MAIN_SETUP" -eq "0"] || [ "${SetupServerMethod[AdvancedSetup]}" -eq "1" ]
 		;;
 	esac
 fi
+
+if [ "$OFFICE" != "DoNotInstall" ]; then
+	SEPARATEMACHINE=$(whiptail --title "OFFICE" --radiolist --separate-output \
+	"Choose the method how you want to install your office suite.\nSelect by pressing the spacebar"  \
+	"$WT_HEIGHT" "$WT_WIDTH" 2 \
+	"SeparateMachine"    "" "${Office[SeparateMachine]}" \
+	"SameMachine"        "" $([ ${Office[SeparateMachine]} == 0 ] && echo 1 || echo 0) \
+	3>&1 1>&2 2>&3)
+
+	exitstatus=$?; if [ $exitstatus = 1 ]; then exit; fi
+	clear	
+	
+	case "$SEPARATEMACHINE" in
+		SeparateMachine)
+			Office[SeparateMachine]=1
+		;;		
+		SameMachine)
+			Office[SeparateMachine]=0
+		;;
+		*)
+
+		;;
+	esac	
+fi

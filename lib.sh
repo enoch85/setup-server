@@ -370,3 +370,12 @@ else
   fi
 fi
 }
+
+function install_docker() {
+if ! docker -v &> /dev/null
+then
+    echo "Installing Docker CE..."
+    install_if_not curl
+    curl -fsSL get.docker.com | sh
+fi
+}
