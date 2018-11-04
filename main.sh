@@ -31,18 +31,15 @@ if [ "${DoNotEdit[MainAlreadyRunning]}" -eq "0" ]; then
 	workflow+=("${DIR_STATIC}/SetupFiglet.sh")
 	workflow+=("${DIR_STATIC}/GenerateVirtualHosts.sh")
 	workflow+=("${DIR_STATIC}/NextcloudApps.sh")
-	workflow+=("${DIR_STATIC}/SetupWebmin.sh")
 	workflow+=("${DIR_STATIC}/ChangeUnixUserProfile.sh")
 	workflow+=("${DIR_STATIC}/SetupRedis.sh")
 	workflow+=("${DIR_STATIC}/FinishSetup.sh")
-	# Cleanup bash history?
-	# Contintue after reboot:
+	# Contintue after reboot (More or lesse the startup script):
 	workflow+=("${DIR_STATIC}/FirstStartup.sh")
-	# workflow+=("${DIR_STATIC}/ChangeDBPass.sh")	# Moved to ChangePasswords.sh		# Can this be done at the very end of the script? And can this be done in the ChangePasswords.sh?
-	# workflow+=("${DIR_STATIC}/ActivateSSL.sh")
+	# workflow+=("${DIR_STATIC}/ActivateSSL.sh")		# Has to be activated in the future...
 	workflow+=("${DIR_STATIC}/SetupExtraSoftware.sh")
 	# workflow+=("${DIR_STATIC}/XXXXX.sh")
-	# workflow+=("${DIR_STATIC}/ChangePasswords.sh")
+	# workflow+=("${DIR_STATIC}/ChangePasswords.sh")	# Has to be activated in the future...
 	workflow+=("cleanup.sh")
 	
 

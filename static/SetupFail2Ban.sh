@@ -18,37 +18,39 @@ then
 	
 fi
 
-# Nextcloud 13 is required.
-# lowest_compatible_nc 13
+if [ "${Miscelangelous[SETUP_Fail2ban]}" ]; then
 
-### Local variables ###
-# location of Nextcloud logs
-NCLOG="$(find / -name nextcloud.log)"	# can take a very long time???
-# time to ban an IP that exceeded attempts
-BANTIME_=600000
-# cooldown time for incorrect passwords
-FINDTIME_=1800
-# failed attempts before banning an IP
-MAXRETRY_=10
+	# Nextcloud 13 is required.
+	# lowest_compatible_nc 13
 
-apt update -q4 & spinner_loading
-check_command apt install fail2ban -y
-check_command update-rc.d fail2ban disable
+	### Local variables ###
+	# location of Nextcloud logs
+	NCLOG="$(find / -name nextcloud.log)"	# can take a very long time???
+	# time to ban an IP that exceeded attempts
+	BANTIME_=600000
+	# cooldown time for incorrect passwords
+	FINDTIME_=1800
+	# failed attempts before banning an IP
+	MAXRETRY_=10
 
-if [ -z "$NCLOG" ]
-then
-    echo "nextcloud.log not found"
-    echo "Please add your logpath to $NCPATH/config/config.php and restart this script."
-    exit 1
-else
-    chown www-data:www-data "$NCLOG"
-fi
+	apt update -q4 & spinner_loading
+	check_command apt install fail2ban -y
+	check_command update-rc.d fail2ban disable
 
-# Set values in config.php
-occ_command config:system:set loglevel --value=2
-occ_command config:system:set log_type --value=file
-occ_command config:system:set logfile  --value="$NCLOG"
-occ_command config:system:set logtimezone  --value="$(cat /etc/timezone)"
+	if [ -z "$NCLOG" ]
+	then
+		echo "nextcloud.log not found"
+		echo "Please add your logpath to $NCPATH/config/config.php and restart this script."
+		exit 1
+	else
+		chown www-data:www-data "$NCLOG"
+	fi
+
+	# Set values in config.php
+	occ_command config:system:set loglevel --value=2
+	occ_command config:system:set log_type --value=file
+	occ_command config:system:set logfile  --value="$NCLOG"
+	occ_command config:system:set logtimezone  --value="$(cat /etc/timezone)"
 
 # Create nextcloud.conf file
 cat << NCONF > /etc/fail2ban/filter.d/nextcloud.conf
@@ -112,10 +114,12 @@ logpath  = $NCLOG
 maxretry = $MAXRETRY_
 FCONF
 
-# Update settings
-check_command update-rc.d fail2ban defaults
-check_command update-rc.d fail2ban enable
-check_command service fail2ban restart
+	# Update settings
+	check_command update-rc.d fail2ban defaults
+	check_command update-rc.d fail2ban enable
+	check_command service fail2ban restart
+
+fi
 
 # The End
 # msg_box "Fail2ban is now sucessfully installed.
