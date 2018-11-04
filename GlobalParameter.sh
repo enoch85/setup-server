@@ -10,7 +10,7 @@ DIR_Questions="questions"
 # DIR_APPS="./apps"
 
 # Dirs
-# SCRIPTS=/var/scripts
+SCRIPTS=/var/scripts
 NCPATH=/var/www/nextcloud
 NC_APPS_PATH=$NCPATH/apps
 HTML=/var/www
@@ -81,6 +81,11 @@ REDIS_PASS=$(tr -dc "a-zA-Z0-9@#*=" < /dev/urandom | fold -w "$RSHUF" | head -n 
 [ ! -z "$ES_INSTALL" ] && DOCKER_INS=$(dpkg -l | grep ^ii | awk '{print $2}' | grep docker)
 [ ! -z "$ES_INSTALL" ] && nc_fts="ark74/nc_fts"
 [ ! -z "$ES_INSTALL" ] && fts_es_name="fts_esror"
+
+# Letsencrypt
+LETSENCRYPTPATH="/etc/letsencrypt"
+CERTFILES="$LETSENCRYPTPATH/live"
+# DHPARAMS="$CERTFILES/$SUBDOMAIN/dhparam.pem"
 
 ## bash colors
 # Reset

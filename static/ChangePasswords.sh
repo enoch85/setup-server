@@ -18,6 +18,25 @@ then
 	
 fi
 
+# Change PostgreSQL Password
+
+########################
+# Ask the user for a new password instead of using a random password?
+########################
+
+NCUSER="${SudoUser[Username]}"
+
+sudo -u www-data php "$NCPATH"/occ config:system:set dbpassword --value="$NEWPGPASS"
+
+if [ "$(sudo -u postgres psql -c "ALTER USER $NCUSER WITH PASSWORD '$NEWPGPASS'";)" == "ALTER ROLE" ]; then
+    echo -e "${Green}Your new PosgreSQL Nextcloud password is: $NEWPGPASS${Color_Off}"
+else
+    echo "Changing PostgreSQL Nextcloud password failed."
+    sed -i "s|  'dbpassword' =>.*|  'dbpassword' => '$NCCONFIGDBPASS',|g" /var/www/nextcloud/config/config.php
+    echo "Nothing is changed. Your old password is: $NCCONFIGDBPASS"
+    exit 1
+fi
+
 # Change password for UNIXUSER
 printf "${Color_Off}\n"
 echo "For better security, change the system user password for [$(getent group sudo | cut -d: -f4 | cut -d, -f1)]"

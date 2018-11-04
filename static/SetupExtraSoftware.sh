@@ -31,7 +31,7 @@ if [ "${Miscelangelous[SETUP_Adminer]}" -eq "1" ]; then
 fi
 
 if [ "${Miscelangelous[SETUP_Fail2ban]}" -eq "1" ]; then
-	echo "SETUP_Fail2ban TBD"
+	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/SetupFail2Ban.sh"
 fi
 
 if [ "${SecureSSH[SETUP_SECURE_SSH]}" -eq "1" ]; then
@@ -67,7 +67,9 @@ restart_webserver
     # rm -f "$SCRIPTS"/trusted.sh
 # fi
 # occ_command config:system:set trusted_domains 3 --value="$SUBDOMAIN"
-occ_command config:system:set trusted_domains 3 --value="$ADDRESS"
+# occ_command config:system:set trusted_domains 3 --value="$ADDRESS"	# Oder doch so?
+. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/trusted.sh"	# Oder doch so?
+
 
 # Prefer IPv6
 sed -i "s|precedence ::ffff:0:0/96  100|#precedence ::ffff:0:0/96  100|g" /etc/gai.conf

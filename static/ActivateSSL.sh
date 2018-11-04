@@ -1,83 +1,58 @@
 #!/bin/bash
-# shellcheck disable=2034,2059
-true
-# shellcheck source=lib.sh
-. <(curl -sL https://raw.githubusercontent.com/ggeorgg/vm/master/lib.sh)
+if [ -z "$MAIN_SETUP" ]; then
+	Github_Repository="https://raw.githubusercontent.com/ggeorgg/setup-server"
+	Github_Branch="master"
+	UseLocalFiles=1	# This variable is for developement purposes, so that we don't have to push changes in a file to github befor testing it.
+	Local_Repository="/home/georg/github/ggeorgg/setup-server"
+	if [ ! -f "${Local_Repository}/SourceFile.sh" ] || [ "${UseLocalFiles}" -eq 0 ]; then
+	wget -O "${Local_Repository}/SourceFile.sh" "${Github_Repository}/${Github_Branch}/SourceFile.sh"
+	fi
+	# Include functions (download the config file and read it to arrays)
+	. "${Local_Repository}/SourceFile.sh" "lib.sh"
 
-# Tech and Me © - 2018, https://www.techandme.se/
-
-# Check for errors + debug code and abort if something isn't right
-# 1 = ON
-# 0 = OFF
-DEBUG=0
-debug_mode
-
-# Check if root
-root_check
-
-# Information
-msg_box "Important! Please read this:
-
-This script will install SSL from Let's Encrypt.
-It's free of charge, and very easy to maintain.
-
-Before we begin the installation you need to have
-a domain that the SSL certs will be valid for.
-If you don't have a domain yet, get one before
-you run this script!
-
-You also have to open port 80+443 against this VMs
-IP address: $ADDRESS - do this in your router/FW.
-Here is a guide: https://goo.gl/Uyuf65
-
-This script is located in $SCRIPTS and you
-can run this script after you got a domain.
-
-Please don't run this script if you don't have
-a domain yet. You can get one for a fair price here:
-https://store.binero.se/?lang=en-US"
-
-if [[ "no" == $(ask_yes_or_no "Are you sure you want to continue?") ]]
-then
-msg_box "OK, but if you want to run this script later,
-just type: sudo bash $SCRIPTS/activate-ssl.sh"
-    exit
+	MAIN_SETUP=0
+		
+	## Questions
+	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/WebserverQuestions.sh"
+	
 fi
 
-if [[ "no" == $(ask_yes_or_no "Have you forwarded port 80+443 in your router?") ]]
-then
-msg_box "OK, but if you want to run this script later,
-just type: sudo bash /var/scripts/activate-ssl.sh"
-    exit
-fi
+# if [[ "no" == $(ask_yes_or_no "Have you forwarded port 80+443 in your router?") ]]
+# then
+# msg_box "OK, but if you want to run this script later,
+# just type: sudo bash /var/scripts/activate-ssl.sh"
+    # exit
+# fi
 
-if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
-then
-    sleep 1
-else
-msg_box "OK, but if you want to run this script later, 
-just type: sudo bash /var/scripts/activate-ssl.sh"
-    exit
-fi
+# if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
+# then
+    # sleep 1
+# else
+# msg_box "OK, but if you want to run this script later, 
+# just type: sudo bash /var/scripts/activate-ssl.sh"
+    # exit
+# fi
 
-echo
-while true
-do
-# Ask for domain name
-cat << ENTERDOMAIN
-+---------------------------------------------------------------+
-|    Please enter the domain name you will use for Nextcloud:   |
-|    Like this: example.com, or nextcloud.example.com           |
-+---------------------------------------------------------------+
-ENTERDOMAIN
-echo
-read -r domain
-echo
-if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
-then
-    break
-fi
-done
+# echo
+# while true
+# do
+# # Ask for domain name
+# cat << ENTERDOMAIN
+# +---------------------------------------------------------------+
+# |    Please enter the domain name you will use for Nextcloud:   |
+# |    Like this: example.com, or nextcloud.example.com           |
+# +---------------------------------------------------------------+
+# ENTERDOMAIN
+# echo
+# read -r domain
+# echo
+# if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
+# then
+    # break
+# fi
+# done
+
+domain="${LetsEncrypt[Domain]}"
 
 # Check if port is open with NMAP
 sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
@@ -86,7 +61,7 @@ check_open_port 80 "$domain"
 check_open_port 443 "$domain"
 
 # Fetch latest version of test-new-config.sh
-check_command download_le_script test-new-config
+# check_command download_le_script test-new-config
 
 # Check if $domain exists and is reachable
 echo
@@ -125,7 +100,7 @@ if [ ! -f "$ssl_conf" ]
 then
     touch "$ssl_conf"
     echo "$ssl_conf was successfully created"
-    sleep 2
+    # sleep 2
     cat << SSL_CREATE > "$ssl_conf"
 <VirtualHost *:80>
     ServerName $domain
@@ -208,7 +183,7 @@ fi
 # Methods
 default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
 
-standalone() {
+function standalone() {
 # Generate certs
 if eval "certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
 then
@@ -217,7 +192,7 @@ else
     echo "fail" > /tmp/le_test
 fi
 }
-webroot() {
+function webroot() {
 if eval "certbot certonly --webroot --webroot-path $NCPATH $default_le"
 then
     echo "success" > /tmp/le_test
@@ -225,7 +200,7 @@ else
     echo "fail" > /tmp/le_test
 fi
 }
-dns() {
+function dns() {
 if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory  $default_le"
 then
     echo "success" > /tmp/le_test
@@ -236,7 +211,7 @@ fi
 
 methods=(standalone webroot dns)
 
-create_config() {
+function create_config() {
 # $1 = method
 local method="$1"
 # Check if $CERTFILES exists
@@ -248,12 +223,12 @@ if [ -d "$CERTFILES" ]
         openssl dhparam -dsaparam -out "$DHPARAMS" 4096
     fi
     # Activate new config
-    check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
-    exit
+    # check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
+	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/TestNewConfig.sh" "$domain.conf"
 fi
 }
 
-attempts_left() {
+function attempts_left() {
 local method="$1"
 if [ "$method" == "standalone" ]
 then
@@ -272,31 +247,31 @@ fi
 
 # Generate the cert
 for f in "${methods[@]}"; do "$f"
-if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
-    rm -f /tmp/le_test
-    create_config "$f"
-else
-    rm -f /tmp/le_test
-    attempts_left "$f"
-fi
+	if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
+		rm -f /tmp/le_test
+		create_config "$f"
+	else
+		rm -f /tmp/le_test
+		attempts_left "$f"
+	fi
 done
 
-# Failed
-msg_box "Sorry, last try failed as well. :/
+# # Failed
+# msg_box "Sorry, last try failed as well. :/
 
-The script is located in $SCRIPTS/activate-ssl.sh
-Please try to run it again some other time with other settings.
+# The script is located in $SCRIPTS/activate-ssl.sh
+# Please try to run it again some other time with other settings.
 
-There are different configs you can try in Let's Encrypt's user guide:
-https://letsencrypt.readthedocs.org/en/latest/index.html
-Please check the guide for further information on how to enable SSL.
+# There are different configs you can try in Let's Encrypt's user guide:
+# https://letsencrypt.readthedocs.org/en/latest/index.html
+# Please check the guide for further information on how to enable SSL.
 
-This script is developed on GitHub, feel free to contribute:
-https://github.com/nextcloud/vm
+# This script is developed on GitHub, feel free to contribute:
+# https://github.com/nextcloud/vm
 
-The script will now do some cleanup and revert the settings."
+# The script will now do some cleanup and revert the settings."
 
-# Cleanup
-apt remove letsencrypt -y
-apt autoremove -y
-clear
+# # Cleanup
+# apt remove letsencrypt -y
+# apt autoremove -y
+# clear
