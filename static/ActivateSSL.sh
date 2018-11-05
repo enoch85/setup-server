@@ -13,95 +13,97 @@ if [ -z "$MAIN_SETUP" ]; then
 	MAIN_SETUP=0
 		
 	## Questions
-	. "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/WebserverQuestions.sh"
+	# . "${Local_Repository}/SourceFile.sh" "${DIR_Questions}/WebserverQuestions.sh"
 	
 fi
 
-# if [[ "no" == $(ask_yes_or_no "Have you forwarded port 80+443 in your router?") ]]
-# then
-# msg_box "OK, but if you want to run this script later,
-# just type: sudo bash /var/scripts/activate-ssl.sh"
-    # exit
-# fi
+if [ "${Miscelangelous[SETUP_LetsEncrypt_SSL]}" ]; then
 
-# if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
-# then
-    # sleep 1
-# else
-# msg_box "OK, but if you want to run this script later, 
-# just type: sudo bash /var/scripts/activate-ssl.sh"
-    # exit
-# fi
+	# if [[ "no" == $(ask_yes_or_no "Have you forwarded port 80+443 in your router?") ]]
+	# then
+	# msg_box "OK, but if you want to run this script later,
+	# just type: sudo bash /var/scripts/activate-ssl.sh"
+		# exit
+	# fi
 
-# echo
-# while true
-# do
-# # Ask for domain name
-# cat << ENTERDOMAIN
-# +---------------------------------------------------------------+
-# |    Please enter the domain name you will use for Nextcloud:   |
-# |    Like this: example.com, or nextcloud.example.com           |
-# +---------------------------------------------------------------+
-# ENTERDOMAIN
-# echo
-# read -r domain
-# echo
-# if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
-# then
-    # break
-# fi
-# done
+	# if [[ "yes" == $(ask_yes_or_no "Do you have a domain that you will use?") ]]
+	# then
+		# sleep 1
+	# else
+	# msg_box "OK, but if you want to run this script later, 
+	# just type: sudo bash /var/scripts/activate-ssl.sh"
+		# exit
+	# fi
 
-domain="${LetsEncrypt[Domain]}"
+	# echo
+	# while true
+	# do
+	# # Ask for domain name
+	# cat << ENTERDOMAIN
+	# +---------------------------------------------------------------+
+	# |    Please enter the domain name you will use for Nextcloud:   |
+	# |    Like this: example.com, or nextcloud.example.com           |
+	# +---------------------------------------------------------------+
+	# ENTERDOMAIN
+	# echo
+	# read -r domain
+	# echo
+	# if [[ "yes" == $(ask_yes_or_no "Is this correct? $domain") ]]
+	# then
+		# break
+	# fi
+	# done
 
-# Check if port is open with NMAP
-sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
-network_ok
-check_open_port 80 "$domain"
-check_open_port 443 "$domain"
+	domain="${LetsEncrypt[Domain]}"
 
-# Fetch latest version of test-new-config.sh
-# check_command download_le_script test-new-config
+	# Check if port is open with NMAP
+	sed -i "s|127.0.1.1.*|127.0.1.1       $domain nextcloud|g" /etc/hosts
+	network_ok
+	check_open_port 80 "$domain"
+	check_open_port 443 "$domain"
 
-# Check if $domain exists and is reachable
-echo
-echo "Checking if $domain exists and is reachable..."
-if wget -q -T 10 -t 2 --spider "$domain"; then
-    sleep 1
-elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$domain"; then
-    sleep 1
-elif curl -s -k -m 10 "$domain"; then
-    sleep 1
-elif curl -s -k -m 10 "https://$domain" -o /dev/null ; then
-    sleep 1
-else
-msg_box "Nope, it's not there. You have to create $domain and point
-it to this server before you can run this script."
-    exit 1
-fi
+	# Fetch latest version of test-new-config.sh
+	# check_command download_le_script test-new-config
 
-# Install certbot (Let's Encrypt)
-install_certbot
+	# Check if $domain exists and is reachable
+	echo
+	echo "Checking if $domain exists and is reachable..."
+	if wget -q -T 10 -t 2 --spider "$domain"; then
+		sleep 1
+	elif wget -q -T 10 -t 2 --spider --no-check-certificate "https://$domain"; then
+		sleep 1
+	elif curl -s -k -m 10 "$domain"; then
+		sleep 1
+	elif curl -s -k -m 10 "https://$domain" -o /dev/null ; then
+		sleep 1
+	else
+	msg_box "Nope, it's not there. You have to create $domain and point
+	it to this server before you can run this script."
+		exit 1
+	fi
 
-#Fix issue #28
-ssl_conf="/etc/apache2/sites-available/"$domain.conf""
+	# Install certbot (Let's Encrypt)
+	install_certbot
 
-# DHPARAM
-DHPARAMS="$CERTFILES/$domain/dhparam.pem"
+	#Fix issue #28
+	ssl_conf="/etc/apache2/sites-available/"$domain.conf""
 
-# Check if "$ssl.conf" exists, and if, then delete
-if [ -f "$ssl_conf" ]
-then
-    rm -f "$ssl_conf"
-fi
+	# DHPARAM
+	DHPARAMS="$CERTFILES/$domain/dhparam.pem"
 
-# Generate nextcloud_ssl_domain.conf
-if [ ! -f "$ssl_conf" ]
-then
-    touch "$ssl_conf"
-    echo "$ssl_conf was successfully created"
-    # sleep 2
-    cat << SSL_CREATE > "$ssl_conf"
+	# Check if "$ssl.conf" exists, and if, then delete
+	if [ -f "$ssl_conf" ]
+	then
+		rm -f "$ssl_conf"
+	fi
+
+	# Generate nextcloud_ssl_domain.conf
+	if [ ! -f "$ssl_conf" ]
+	then
+		touch "$ssl_conf"
+		echo "$ssl_conf was successfully created"
+		# sleep 2
+		cat << SSL_CREATE > "$ssl_conf"
 <VirtualHost *:80>
     ServerName $domain
     Redirect / https://$domain
@@ -165,96 +167,99 @@ then
 
 </VirtualHost>
 SSL_CREATE
-fi
-
-# Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
-if [ ! -f  "$PHP_POOL_DIR"/nextcloud.conf ]
-then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$ssl_conf"
-    sed -i "s|SetHandler.*|#|g" "$ssl_conf"
-    sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
-elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
-then
-    sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
-    sed -i "s|SetHandler.*|#|g" "$ssl_conf"
-    sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
-fi
-
-# Methods
-default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
-
-function standalone() {
-# Generate certs
-if eval "certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
-then
-    echo "success" > /tmp/le_test
-else
-    echo "fail" > /tmp/le_test
-fi
-}
-function webroot() {
-if eval "certbot certonly --webroot --webroot-path $NCPATH $default_le"
-then
-    echo "success" > /tmp/le_test
-else
-    echo "fail" > /tmp/le_test
-fi
-}
-function dns() {
-if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory  $default_le"
-then
-    echo "success" > /tmp/le_test
-else
-    echo "fail" > /tmp/le_test
-fi
-}
-
-methods=(standalone webroot dns)
-
-function create_config() {
-# $1 = method
-local method="$1"
-# Check if $CERTFILES exists
-if [ -d "$CERTFILES" ]
- then
-    # Generate DHparams chifer
-    if [ ! -f "$DHPARAMS" ]
-    then
-        openssl dhparam -dsaparam -out "$DHPARAMS" 4096
-    fi
-    # Activate new config
-    # check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
-	. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/TestNewConfig.sh" "$domain.conf"
-fi
-}
-
-function attempts_left() {
-local method="$1"
-if [ "$method" == "standalone" ]
-then
-    printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
-    any_key "Press any key to continue..."
-elif [ "$method" == "webroot" ]
-then
-    printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
-    any_key "Press any key to continue..."
-elif [ "$method" == "dns" ]
-then
-    printf "%b" "${IRed}It seems like no certs were generated, please check your DNS and try again.\n${Color_Off}"
-    any_key "Press any key to continue..."
-fi
-}
-
-# Generate the cert
-for f in "${methods[@]}"; do "$f"
-	if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
-		rm -f /tmp/le_test
-		create_config "$f"
-	else
-		rm -f /tmp/le_test
-		attempts_left "$f"
 	fi
-done
+
+	# Check if PHP-FPM is installed and if not, then remove PHP-FPM related lines from config
+	if [ ! -f  "$PHP_POOL_DIR"/nextcloud.conf ]
+	then
+		sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$ssl_conf"
+		sed -i "s|SetHandler.*|#|g" "$ssl_conf"
+		sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
+	elif ! dpkg -s php7.2-fpm | grep "Status: install ok installed" >/dev/null 2>&1
+	then
+		sed -i "s|<FilesMatch.*|# Removed due to that PHP-FPM is missing|g" "$1"
+		sed -i "s|SetHandler.*|#|g" "$ssl_conf"
+		sed -i "s|</FilesMatch.*|#|g" "$ssl_conf"
+	fi
+
+	# Methods
+	default_le="--rsa-key-size 4096 --renew-by-default --agree-tos -d $domain"
+
+	function standalone() {
+	# Generate certs
+	if eval "certbot certonly --standalone --pre-hook 'service apache2 stop' --post-hook 'service apache2 start' $default_le"
+	then
+		echo "success" > /tmp/le_test
+	else
+		echo "fail" > /tmp/le_test
+	fi
+	}
+	function webroot() {
+	if eval "certbot certonly --webroot --webroot-path $NCPATH $default_le"
+	then
+		echo "success" > /tmp/le_test
+	else
+		echo "fail" > /tmp/le_test
+	fi
+	}
+	function dns() {
+	if eval "certbot certonly --manual --manual-public-ip-logging-ok --preferred-challenges dns --server https://acme-v02.api.letsencrypt.org/directory  $default_le"
+	then
+		echo "success" > /tmp/le_test
+	else
+		echo "fail" > /tmp/le_test
+	fi
+	}
+
+	methods=(standalone webroot dns)
+
+	function create_config() {
+	# $1 = method
+	local method="$1"
+	# Check if $CERTFILES exists
+	if [ -d "$CERTFILES" ]
+	 then
+		# Generate DHparams chifer
+		if [ ! -f "$DHPARAMS" ]
+		then
+			openssl dhparam -dsaparam -out "$DHPARAMS" 4096
+		fi
+		# Activate new config
+		# check_command bash "$SCRIPTS/test-new-config.sh" "$domain.conf"
+		. "${Local_Repository}/SourceFile.sh" "${DIR_STATIC}/TestNewConfig.sh" "$domain.conf"
+	fi
+	}
+
+	function attempts_left() {
+	local method="$1"
+	if [ "$method" == "standalone" ]
+	then
+		printf "%b" "${ICyan}It seems like no certs were generated, we will do 2 more tries.\n${Color_Off}"
+		any_key "Press any key to continue..."
+	elif [ "$method" == "webroot" ]
+	then
+		printf "%b" "${ICyan}It seems like no certs were generated, we will do 1 more tries.\n${Color_Off}"
+		any_key "Press any key to continue..."
+	elif [ "$method" == "dns" ]
+	then
+		printf "%b" "${IRed}It seems like no certs were generated, please check your DNS and try again.\n${Color_Off}"
+		any_key "Press any key to continue..."
+	fi
+	}
+
+	# Generate the cert
+	for f in "${methods[@]}"; do "$f"
+		if [ "$(grep 'success' /tmp/le_test)" == 'success' ]; then
+			rm -f /tmp/le_test
+			create_config "$f"
+		else
+			rm -f /tmp/le_test
+			attempts_left "$f"
+		fi
+	done
+
+fi
+
 
 # # Failed
 # msg_box "Sorry, last try failed as well. :/
